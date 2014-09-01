@@ -1,11 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.synapticon.buckecontroller.UsbAccessoryTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.12 sec <<< FAILURE! - in com.synapticon.buckecontroller.UsbAccessoryTest
-testSwitchDevice(com.synapticon.buckecontroller.UsbAccessoryTest)  Time elapsed: 0.063 sec  <<< ERROR!
-java.nio.BufferOverflowException: null
-	at java.nio.DirectByteBuffer.put(DirectByteBuffer.java:363)
-	at java.nio.ByteBuffer.put(ByteBuffer.java:859)
-	at com.synapticon.buckecontroller.UsbAccessory.switchDevice(UsbAccessory.java:61)
-	at com.synapticon.buckecontroller.UsbAccessoryTest.testSwitchDevice(UsbAccessoryTest.java:41)
-
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.381 sec - in com.synapticon.buckecontroller.UsbAccessoryTest

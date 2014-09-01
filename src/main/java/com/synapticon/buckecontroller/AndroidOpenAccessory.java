@@ -12,27 +12,38 @@ import javax.usb.UsbHostManager;
 import javax.usb.UsbHub;
 import javax.usb.UsbServices;
 
-public class UsbAccessoryHigh {
+public class AndroidOpenAccessory {
 
+    private final IdentifyingInformation identifyingInformation;
     private final short androidDeviceVendorId;
     private final short androidDeviceProductId;
     private final short androidAccessoryVendorId;
     private final short androidAccessoryProductId;
 
-    public UsbAccessoryHigh(short androidDeviceVendorId, short androidDeviceProductId, short androidAccessoryVendorId, short androidAccessoryProductId) {
+    public AndroidOpenAccessory(IdentifyingInformation identifyingInformation, short androidDeviceVendorId, short androidDeviceProductId, short androidAccessoryVendorId, short androidAccessoryProductId) {
+        this.identifyingInformation = identifyingInformation;
         this.androidDeviceVendorId = androidDeviceVendorId;
         this.androidDeviceProductId = androidDeviceProductId;
         this.androidAccessoryVendorId = androidAccessoryVendorId;
         this.androidAccessoryProductId = androidAccessoryProductId;
     }
-    
+
     /**
-     * Initialize for Google Nexus 4 (0xD002)
+     * Initialize Google Nexus 4 (0xD002)
      */
-    public UsbAccessoryHigh() {
-        this((short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
+    public AndroidOpenAccessory() {
+        this(new IdentifyingInformation(
+                "sankovicmarko.com",
+                "USBAccessoryService",
+                "USBAccessoryServiceDescription",
+                "0.0.1",
+                "httsp://usbaccessoryservice.sankovicmarko.com",
+                "USBAccessoryServiceSerial"
+        ),
+                (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01
+        );
     }
-    
+
     /**
      * Attempt to Start in Accessory Mode.
      *
@@ -48,7 +59,7 @@ public class UsbAccessoryHigh {
      * @return
      * @throws UsbException
      */
-    public UsbDevice startInAccessoryMode() throws UsbException {
+    public UsbDevice switchDevice() throws UsbException {
         UsbServices usbServices = UsbHostManager.getUsbServices();
         UsbHub rootUsbHub = usbServices.getRootUsbHub();
 
@@ -61,7 +72,7 @@ public class UsbAccessoryHigh {
         try {
             Thread.sleep(1000); // Give time for USB device to re-introduce itself on the bus in accessory mode.
         } catch (InterruptedException ex) {
-            Logger.getLogger(UsbAccessoryHigh.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AndroidOpenAccessory.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         UsbDevice accessory = findDevice(rootUsbHub, androidAccessoryVendorId, androidAccessoryProductId);
@@ -85,7 +96,7 @@ public class UsbAccessoryHigh {
         }
         return null;
     }
-    
+
     /**
      * Figure out if the device supports the Android accessory protocol.
      *
@@ -110,8 +121,8 @@ public class UsbAccessoryHigh {
 
         int protocol = irp.getData()[0];
 
-        if (protocol < 2) {
-            throw new RuntimeException("Only Android Open Accessory protocol v2 is supported");
+        if (protocol < 1) {
+            throw new RuntimeException("Could not read device protocol version");
         }
     }
 
@@ -128,12 +139,12 @@ public class UsbAccessoryHigh {
      * @throws UsbException
      */
     private void sendIdentifyingStringInformationToTheDevice(UsbDevice device) throws UsbException {
-        sendString(device, (short) 0, "sankovicmarko.com");
-        sendString(device, (short) 1, "USBAccessoryService");
-        sendString(device, (short) 2, "USBAccessoryServiceDescription");
-        sendString(device, (short) 3, "0.0.1");
-        sendString(device, (short) 4, "httsp://usbaccessoryservice.sankovicmarko.com");
-        sendString(device, (short) 5, "USBAccessoryServiceSerial");
+        sendString(device, (short) 0, identifyingInformation.getManufacturerName());
+        sendString(device, (short) 1, identifyingInformation.getModelName());
+        sendString(device, (short) 2, identifyingInformation.getDescription());
+        sendString(device, (short) 3, identifyingInformation.getVersion());
+        sendString(device, (short) 4, identifyingInformation.getURI());
+        sendString(device, (short) 5, identifyingInformation.getSerialNumber());
     }
 
     private void sendString(UsbDevice device, short id, String value) throws UsbException {
