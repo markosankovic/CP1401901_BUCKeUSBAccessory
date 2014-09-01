@@ -12,6 +12,8 @@ import org.usb4java.LibUsbException;
 
 public class UsbAccessory {
 
+    Context context;
+
     private final static Logger LOGGER = Logger.getLogger(UsbAccessory.class.getName());
 
     public static final int VID_ANDROID_DEVICE = 0x18d1;
@@ -21,7 +23,8 @@ public class UsbAccessory {
     public static final int PID_ANDROID_ACCESSORY = 0x2d01;
 
     public UsbAccessory() {
-        int result = LibUsb.init(null);
+        context = new Context();
+        int result = LibUsb.init(context);
         if (result != LibUsb.SUCCESS) {
             throw new LibUsbException("Unable to initialize libusb.", result);
         }
@@ -36,47 +39,36 @@ public class UsbAccessory {
     public Device getAndroidDevice() {
         LOGGER.info("Looking for Android Device");
         LOGGER.info(String.format("VID %d - PID %d", VID_ANDROID_DEVICE, PID_ANDROID_DEVICE));
-        //return findDevice(VID_ANDROID_DEVICE, PID_ANDROID_DEVICE);
-        DeviceHandle deviceHandle = LibUsb.openDeviceWithVidPid(null, (short) VID_ANDROID_DEVICE, (short) PID_ANDROID_DEVICE);
-        return LibUsb.getDevice(deviceHandle);
+        // DeviceHandle deviceHandle = LibUsb.openDeviceWithVidPid(null, (short) VID_ANDROID_DEVICE, (short) PID_ANDROID_DEVICE);
+        return findDevice(VID_ANDROID_DEVICE, PID_ANDROID_DEVICE);
     }
 
     public void switchDevice() {
-        DeviceHandle deviceHandle = LibUsb.openDeviceWithVidPid(null, (short) VID_ANDROID_DEVICE, (short) PID_ANDROID_DEVICE);
+        Device device = getAndroidDevice();
+        int interfaceNumber = 0;
 
-        int result = LibUsb.claimInterface(deviceHandle, 0);
+        DeviceHandle handle = new DeviceHandle();
+        int result = LibUsb.open(device, handle);
         if (result != LibUsb.SUCCESS) {
-            throw new LibUsbException("Unable to claim interface", result);
+            throw new LibUsbException("Unable to open USB device", result);
         }
+        
         try {
-
-        ByteBuffer buffer = ByteBuffer.allocateDirect(1);
-        buffer.put(new byte[]{51});
-        int transfered = LibUsb.controlTransfer(deviceHandle,
-                (byte) (LibUsb.REQUEST_TYPE_CLASS | LibUsb.RECIPIENT_INTERFACE),
-                (byte) 0xC0, (short) 0, (short) 0, buffer, 2000);
-        if (transfered < 0) {
-            throw new LibUsbException("Control transfer failed", transfered);
-        }
-        System.out.println(transfered + " bytes sent");
-            
-        } finally {
-            result = LibUsb.releaseInterface(deviceHandle, 0);
+            result = LibUsb.claimInterface(handle, interfaceNumber);
             if (result != LibUsb.SUCCESS) {
-                throw new LibUsbException("Unable to release interface", result);
+                throw new LibUsbException("Unable to claim interface", result);
             }
+            try {
+                System.out.println("Use interface here");
+            } finally {
+                result = LibUsb.releaseInterface(handle, interfaceNumber);
+                if (result != LibUsb.SUCCESS) {
+                    throw new LibUsbException("Unable to release interface", result);
+                }
+            }
+        } finally {
+            LibUsb.close(handle);
         }
-
-        /*
-         if (result != LibUsb.SUCCESS) {
-         throw new LibUsbException("Unable to open USB device", result);
-         }
-         try {
-         System.out.println("asdf");
-         } finally {
-         LibUsb.close(handle);
-         }
-         */
     }
 
     public Device startAccessoryMode() {
@@ -108,7 +100,7 @@ public class UsbAccessory {
     public Device findDevice(int vendorId, int productId) {
         // Read the USB device list
         DeviceList list = new DeviceList();
-        int result = LibUsb.getDeviceList(null, list);
+        int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
         }

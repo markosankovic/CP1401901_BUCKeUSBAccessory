@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.synapticon.buckecontroller.UsbAccessoryTest" time="0.179" tests="4" errors="1" skipped="3" failures="0">
+<testsuite name="com.synapticon.buckecontroller.UsbAccessoryTest" time="0.194" tests="1" errors="1" skipped="0" failures="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib"/>
@@ -28,7 +28,7 @@
     <property name="maven.ext.class.path" value="/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/maven-nblib/netbeans-eventspy.jar"/>
     <property name="classworlds.conf" value="/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/maven/bin/m2.conf"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
-    <property name="java.library.path" value="/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/webcommon/bin::/Users/marko/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.library.path" value="/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/webcommon/bin::/var/root/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
@@ -50,7 +50,7 @@
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
     <property name="java.vm.info" value="mixed mode"/>
     <property name="java.version" value="1.8.0_11"/>
-    <property name="java.ext.dirs" value="/Users/marko/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="java.ext.dirs" value="/var/root/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
     <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_11.jdk/Contents/Home/jre/classes"/>
     <property name="java.vendor" value="Oracle Corporation"/>
     <property name="maven.home" value="/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/maven"/>
@@ -62,19 +62,20 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase name="testFindDevice" classname="com.synapticon.buckecontroller.UsbAccessoryTest" time="0">
-    <skipped/>
-  </testcase>
-  <testcase name="testStartAccessoryMode" classname="com.synapticon.buckecontroller.UsbAccessoryTest" time="0">
-    <skipped/>
-  </testcase>
-  <testcase name="testSwitchDevice" classname="com.synapticon.buckecontroller.UsbAccessoryTest" time="0.179">
+  <testcase name="testSwitchDevice" classname="com.synapticon.buckecontroller.UsbAccessoryTest" time="0.194">
     <error message="USB error 3: Unable to claim interface: Access denied (insufficient permissions)" type="org.usb4java.LibUsbException">org.usb4java.LibUsbException: USB error 3: Unable to claim interface: Access denied (insufficient permissions)
-	at com.synapticon.buckecontroller.UsbAccessory.switchDevice(UsbAccessory.java:49)
-	at com.synapticon.buckecontroller.UsbAccessoryTest.testSwitchDevice(UsbAccessoryTest.java:52)
+	at com.synapticon.buckecontroller.UsbAccessory.switchDevice(UsbAccessory.java:59)
+	at com.synapticon.buckecontroller.UsbAccessoryTest.testSwitchDevice(UsbAccessoryTest.java:38)
 </error>
-  </testcase>
-  <testcase name="testIntToShortConversion" classname="com.synapticon.buckecontroller.UsbAccessoryTest" time="0">
-    <skipped/>
+    <system-out><![CDATA[descriptor.idVendor(): 6353
+vendorId: 6353
+descriptor.idProduct(): -12286
+productId: 53250
+]]></system-out>
+    <system-err><![CDATA[Sep 01, 2014 9:17:19 PM com.synapticon.buckecontroller.UsbAccessory getAndroidDevice
+INFO: Looking for Android Device
+Sep 01, 2014 9:17:19 PM com.synapticon.buckecontroller.UsbAccessory getAndroidDevice
+INFO: VID 6353 - PID 53250
+]]></system-err>
   </testcase>
 </testsuite>
