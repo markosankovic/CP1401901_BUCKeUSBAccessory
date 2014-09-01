@@ -1,9 +1,11 @@
 -------------------------------------------------------------------------------
 Test set: com.synapticon.buckecontroller.UsbAccessoryTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.246 sec <<< FAILURE! - in com.synapticon.buckecontroller.UsbAccessoryTest
-testSwitchDevice(com.synapticon.buckecontroller.UsbAccessoryTest)  Time elapsed: 0.194 sec  <<< ERROR!
-org.usb4java.LibUsbException: USB error 3: Unable to claim interface: Access denied (insufficient permissions)
-	at com.synapticon.buckecontroller.UsbAccessory.switchDevice(UsbAccessory.java:59)
-	at com.synapticon.buckecontroller.UsbAccessoryTest.testSwitchDevice(UsbAccessoryTest.java:38)
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.12 sec <<< FAILURE! - in com.synapticon.buckecontroller.UsbAccessoryTest
+testSwitchDevice(com.synapticon.buckecontroller.UsbAccessoryTest)  Time elapsed: 0.063 sec  <<< ERROR!
+java.nio.BufferOverflowException: null
+	at java.nio.DirectByteBuffer.put(DirectByteBuffer.java:363)
+	at java.nio.ByteBuffer.put(ByteBuffer.java:859)
+	at com.synapticon.buckecontroller.UsbAccessory.switchDevice(UsbAccessory.java:61)
+	at com.synapticon.buckecontroller.UsbAccessoryTest.testSwitchDevice(UsbAccessoryTest.java:41)
 
