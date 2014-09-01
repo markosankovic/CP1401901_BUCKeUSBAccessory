@@ -32,7 +32,7 @@ public class UsbAccessoryHighTest {
     @Test
     public void testSomeMethod() throws UsbException, UnsupportedEncodingException {
         UsbAccessoryHigh usbAccessoryHigh = new UsbAccessoryHigh();
-        usbAccessoryHigh.switchDevice();
+        usbAccessoryHigh.startInAccessoryMode();
     }
 
 }

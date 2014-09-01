@@ -1,9 +1,9 @@
 package com.synapticon.buckecontroller;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.usb.UsbConst;
 import javax.usb.UsbControlIrp;
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
@@ -14,8 +14,63 @@ import javax.usb.UsbServices;
 
 public class UsbAccessoryHigh {
 
-    public UsbDevice findDevice(UsbHub hub, short vendorId, short productId) {
-        
+    private final short androidDeviceVendorId;
+    private final short androidDeviceProductId;
+    private final short androidAccessoryVendorId;
+    private final short androidAccessoryProductId;
+
+    public UsbAccessoryHigh(short androidDeviceVendorId, short androidDeviceProductId, short androidAccessoryVendorId, short androidAccessoryProductId) {
+        this.androidDeviceVendorId = androidDeviceVendorId;
+        this.androidDeviceProductId = androidDeviceProductId;
+        this.androidAccessoryVendorId = androidAccessoryVendorId;
+        this.androidAccessoryProductId = androidAccessoryProductId;
+    }
+    
+    /**
+     * Initialize for Google Nexus 4 (0xD002)
+     */
+    public UsbAccessoryHigh() {
+        this((short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
+    }
+    
+    /**
+     * Attempt to Start in Accessory Mode.
+     *
+     * If the vendor and product IDs do not correspond to an Android-powered
+     * device in accessory mode, the accessory cannot discern whether the device
+     * supports accessory mode and is not in that state, or if the device does
+     * not support accessory mode at all. This is because devices that support
+     * accessory mode but aren't in it initially report the device's
+     * manufacturer vendor ID and product ID, and not the special Android Open
+     * Accessory ones. In either case, the accessory should try to start the
+     * device into accessory mode to figure out if the device supports it.
+     *
+     * @return
+     * @throws UsbException
+     */
+    public UsbDevice startInAccessoryMode() throws UsbException {
+        UsbServices usbServices = UsbHostManager.getUsbServices();
+        UsbHub rootUsbHub = usbServices.getRootUsbHub();
+
+        UsbDevice device = findDevice(rootUsbHub, androidDeviceVendorId, androidDeviceProductId);
+
+        checkProtocol(device);
+        sendIdentifyingStringInformationToTheDevice(device);
+        requestTheDeviceStartUpInAccessoryMode(device);
+
+        try {
+            Thread.sleep(1000); // Give time for USB device to re-introduce itself on the bus in accessory mode.
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UsbAccessoryHigh.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        UsbDevice accessory = findDevice(rootUsbHub, androidAccessoryVendorId, androidAccessoryProductId);
+
+        return accessory;
+    }
+
+    private UsbDevice findDevice(UsbHub hub, short vendorId, short productId) {
+
         for (UsbDevice device : (List<UsbDevice>) hub.getAttachedUsbDevices()) {
             UsbDeviceDescriptor desc = device.getUsbDeviceDescriptor();
             if (desc.idVendor() == vendorId && desc.idProduct() == productId) {
@@ -30,79 +85,91 @@ public class UsbAccessoryHigh {
         }
         return null;
     }
-
-    public void switchDevice() throws UsbException, UnsupportedEncodingException, InterruptedException {
-        UsbServices usbServices = UsbHostManager.getUsbServices();
-        UsbHub rootUsbHub = usbServices.getRootUsbHub();
-        
-        UsbDevice device = findDevice(rootUsbHub, (short) 0x18d1, (short) 0xd002);
-        
-        checkProtocol(device);
-        setStrings(device);
-        setAccessoryMode(device);
-        
-        Thread.sleep(1000);
-        
-        UsbDevice accessory = findDevice(rootUsbHub, (short) 0x18d1, (short) 0x2d01);
-        
-        assert (accessory != null);
-        
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(UsbAccessoryHigh.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
+    
+    /**
+     * Figure out if the device supports the Android accessory protocol.
+     *
+     * Send a 51 control request ("Get Protocol") to figure out if the device
+     * supports the Android accessory protocol. A non-zero number is returned if
+     * the protocol is supported, which represents the version of the protocol
+     * that the device supports. This request is a control request on endpoint
+     * 0.
+     *
+     * @param device
+     * @throws UsbException
+     */
     private void checkProtocol(UsbDevice device) throws UsbException {
         UsbControlIrp irp = device.createUsbControlIrp(
-                (byte) 0xC0,
-                (byte ) 51,
+                (byte) (byte) (UsbConst.REQUESTTYPE_DIRECTION_IN | UsbConst.REQUESTTYPE_TYPE_VENDOR),
+                (byte) 51,
                 (short) 0,
                 (short) 0
         );
         irp.setData(new byte[2]);
         device.syncSubmit(irp);
-        
+
         int protocol = irp.getData()[0];
-        
+
         if (protocol < 2) {
             throw new RuntimeException("Only Android Open Accessory protocol v2 is supported");
         }
     }
 
-    private void setStrings(UsbDevice device) throws UsbException {
+    /**
+     * Send identifying string information to the device.
+     *
+     * If the device returns a proper protocol version, send identifying string
+     * information to the device. This information allows the device to figure
+     * out an appropriate application for this accessory and also present the
+     * user with a URL if an appropriate application does not exist. These
+     * requests are control requests on endpoint 0 (for each string ID)
+     *
+     * @param device
+     * @throws UsbException
+     */
+    private void sendIdentifyingStringInformationToTheDevice(UsbDevice device) throws UsbException {
         sendString(device, (short) 0, "sankovicmarko.com");
         sendString(device, (short) 1, "USBAccessoryService");
         sendString(device, (short) 2, "USBAccessoryServiceDescription");
         sendString(device, (short) 3, "0.0.1");
         sendString(device, (short) 4, "httsp://usbaccessoryservice.sankovicmarko.com");
-        sendString(device, (short) 5, "USBAccessoryServiceSerial"); 
+        sendString(device, (short) 5, "USBAccessoryServiceSerial");
     }
-    
+
     private void sendString(UsbDevice device, short id, String value) throws UsbException {
         UsbControlIrp irp = device.createUsbControlIrp(
-                (byte) 0x40,
-                (byte ) 52,
+                (byte) (UsbConst.REQUESTTYPE_DIRECTION_OUT | UsbConst.REQUESTTYPE_TYPE_VENDOR),
+                (byte) 52,
                 (short) 0,
                 (short) id
         );
         irp.setData(value.getBytes());
         device.syncSubmit(irp);
-        
+
         if (irp.getData().length != value.length()) {
-            throw new UsbException("sendString control return data length is not equal to the submitted String");
+            throw new UsbException();
         }
     }
-    
-    private void setAccessoryMode(UsbDevice device) throws UsbException {
+
+    /**
+     * Request the device start up in accessory mode.
+     *
+     * When the identifying strings are sent, request the device start up in
+     * accessory mode. This request is a control request on endpoint 0. After
+     * sending the final control request, the connected USB device should
+     * re-introduce itself on the bus in accessory mode and the accessory can
+     * re-enumerate the connected devices.
+     *
+     * @param device
+     * @throws UsbException
+     */
+    private void requestTheDeviceStartUpInAccessoryMode(UsbDevice device) throws UsbException {
         UsbControlIrp irp = device.createUsbControlIrp(
-                (byte) 0x40,
-                (byte ) 53,
+                (byte) (UsbConst.REQUESTTYPE_DIRECTION_OUT | UsbConst.REQUESTTYPE_TYPE_VENDOR),
+                (byte) 53,
                 (short) 0,
                 (short) 0
         );
-        irp.setData("".getBytes());
         device.syncSubmit(irp);
     }
 }
