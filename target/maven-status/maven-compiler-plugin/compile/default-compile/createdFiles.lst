@@ -1,4 +1,5 @@
 com/synapticon/buckecontroller/FXMLController.class
-com/synapticon/buckecontroller/IdentifyingInformation.class
-com/synapticon/buckecontroller/MainApp.class
 com/synapticon/buckecontroller/AndroidOpenAccessory.class
+com/synapticon/buckecontroller/IdentifyingInformation.class
+com/synapticon/buckecontroller/AndroidDevice.class
+com/synapticon/buckecontroller/MainApp.class

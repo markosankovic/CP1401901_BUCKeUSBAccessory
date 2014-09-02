@@ -116,10 +116,5 @@
             <artifactId>usb4java-javax</artifactId>
             <version>1.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.usb4java</groupId>
-            <artifactId>usb4java-javax</artifactId>
-            <version>1.2.0</version>
-        </dependency>
     </dependencies>
 </project>

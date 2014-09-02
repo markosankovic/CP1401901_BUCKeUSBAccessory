@@ -12,36 +12,34 @@ import javax.usb.UsbHostManager;
 import javax.usb.UsbHub;
 import javax.usb.UsbServices;
 
+/**
+ * AndroidOpenAccessory.
+ *
+ * @see https://source.android.com/accessories/protocol.html
+ */
 public class AndroidOpenAccessory {
 
     private final IdentifyingInformation identifyingInformation;
-    private final short androidDeviceVendorId;
-    private final short androidDeviceProductId;
-    private final short androidAccessoryVendorId;
-    private final short androidAccessoryProductId;
-
-    public AndroidOpenAccessory(IdentifyingInformation identifyingInformation, short androidDeviceVendorId, short androidDeviceProductId, short androidAccessoryVendorId, short androidAccessoryProductId) {
-        this.identifyingInformation = identifyingInformation;
-        this.androidDeviceVendorId = androidDeviceVendorId;
-        this.androidDeviceProductId = androidDeviceProductId;
-        this.androidAccessoryVendorId = androidAccessoryVendorId;
-        this.androidAccessoryProductId = androidAccessoryProductId;
-    }
+    private final short deviceVendorId;
+    private final short deviceProductId;
+    private final short accessoryVendorId;
+    private final short accessoryProductId;
 
     /**
-     * Initialize Google Nexus 4 (0xD002)
+     * AndroidOpenAccessory.
+     *
+     * @param identifyingInformation
+     * @param deviceVendorId
+     * @param deviceProductId
+     * @param accessoryVendorId
+     * @param accessoryProductId
      */
-    public AndroidOpenAccessory() {
-        this(new IdentifyingInformation(
-                "sankovicmarko.com",
-                "USBAccessoryService",
-                "USBAccessoryServiceDescription",
-                "0.0.1",
-                "httsp://usbaccessoryservice.sankovicmarko.com",
-                "USBAccessoryServiceSerial"
-        ),
-                (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01
-        );
+    public AndroidOpenAccessory(IdentifyingInformation identifyingInformation, short deviceVendorId, short deviceProductId, short accessoryVendorId, short accessoryProductId) {
+        this.identifyingInformation = identifyingInformation;
+        this.deviceVendorId = deviceVendorId;
+        this.deviceProductId = deviceProductId;
+        this.accessoryVendorId = accessoryVendorId;
+        this.accessoryProductId = accessoryProductId;
     }
 
     /**
@@ -63,7 +61,7 @@ public class AndroidOpenAccessory {
         UsbServices usbServices = UsbHostManager.getUsbServices();
         UsbHub rootUsbHub = usbServices.getRootUsbHub();
 
-        UsbDevice device = findDevice(rootUsbHub, androidDeviceVendorId, androidDeviceProductId);
+        UsbDevice device = findDevice(rootUsbHub, deviceVendorId, deviceProductId);
 
         checkProtocol(device);
         sendIdentifyingStringInformationToTheDevice(device);
@@ -75,11 +73,19 @@ public class AndroidOpenAccessory {
             Logger.getLogger(AndroidOpenAccessory.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        UsbDevice accessory = findDevice(rootUsbHub, androidAccessoryVendorId, androidAccessoryProductId);
+        UsbDevice accessory = findDevice(rootUsbHub, accessoryVendorId, accessoryProductId);
 
         return accessory;
     }
 
+    /**
+     * Find device by vendor id and product id.
+     *
+     * @param hub
+     * @param vendorId
+     * @param productId
+     * @return
+     */
     private UsbDevice findDevice(UsbHub hub, short vendorId, short productId) {
 
         for (UsbDevice device : (List<UsbDevice>) hub.getAttachedUsbDevices()) {

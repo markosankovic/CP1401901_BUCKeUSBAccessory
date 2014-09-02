@@ -1,16 +1,14 @@
 package com.synapticon.buckecontroller;
 
-import javax.usb.UsbDevice;
 import javax.usb.UsbException;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class AndroidOpenAccessoryTest {
+public class AndroidDeviceTest {
 
     @Ignore
     @Test
-    public void testSwitchDevice() throws UsbException {
+    public void testWriteToTheDevice() throws InterruptedException, UsbException {
         // Initialize the Google Nexus 4 (0xD002)
         AndroidOpenAccessory openAccessory = new AndroidOpenAccessory(new IdentifyingInformation(
                 "sankovicmarko.com",
@@ -20,7 +18,17 @@ public class AndroidOpenAccessoryTest {
                 "httsp://usbaccessoryservice.sankovicmarko.com",
                 "USBAccessoryServiceSerial"
         ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
-        UsbDevice device = openAccessory.switchDevice();
-        assertNotNull(device);
+
+        AndroidDevice androidDevice = new AndroidDevice(openAccessory);
+
+        int times = 10;
+        while (true) {
+            if (times == 0) {
+                break;
+            }
+            int syncSubmit = androidDevice.getWritePipe().syncSubmit("A0000".getBytes());
+        }
+        times--;
+        Thread.sleep(1000);
     }
 }
