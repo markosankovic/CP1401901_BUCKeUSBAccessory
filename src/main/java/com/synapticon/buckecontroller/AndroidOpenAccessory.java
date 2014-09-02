@@ -63,6 +63,16 @@ public class AndroidOpenAccessory {
 
         UsbDevice device = findDevice(rootUsbHub, deviceVendorId, deviceProductId);
 
+        // Check if the attached device supports Android accessory mode and is already in accessory mode.
+        if (device == null) {
+            UsbDevice accessory = findDevice(rootUsbHub, accessoryVendorId, accessoryProductId);
+            if (accessory == null) {
+                throw new UsbException("The attached device does not support Android accessory mode");
+            }
+            return accessory;
+        }
+        
+        // The attached device supports Android accessory mode, but it is not in accessory mode.
         checkProtocol(device);
         sendIdentifyingStringInformationToTheDevice(device);
         requestTheDeviceStartUpInAccessoryMode(device);

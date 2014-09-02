@@ -13,6 +13,7 @@ import javax.usb.UsbException;
 public class FXMLController implements Initializable {
 
     AndroidDevice androidDevice;
+    Thread thread;
 
     @FXML
     private Label label;
@@ -40,6 +41,27 @@ public class FXMLController implements Initializable {
                     "USBAccessoryServiceSerial"
             ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
             androidDevice = new AndroidDevice(openAccessory);
+
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            byte[] data = new byte[16384];
+                            int received = androidDevice.getReadPipe().syncSubmit(data);
+                            System.out.println(received + " bytes received");
+                            androidDevice.getReadPipe();
+                            Thread.sleep(1000);
+                        } catch (InterruptedException | UsbException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            break;
+                        }
+                    }
+                }
+            });
+
+            thread.start();
+
         } catch (UsbException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }

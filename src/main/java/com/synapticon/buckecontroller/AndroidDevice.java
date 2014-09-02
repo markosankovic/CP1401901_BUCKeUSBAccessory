@@ -1,5 +1,7 @@
 package com.synapticon.buckecontroller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
 import javax.usb.UsbEndpoint;
@@ -61,5 +63,45 @@ public final class AndroidDevice {
      */
     public UsbPipe getWritePipe() {
         return writePipe;
+    }
+
+    /**
+     * Close read and write pipes and release USB interface.
+     *
+     * @throws javax.usb.UsbException
+     */
+    public void close() throws UsbException {
+        writePipe.close();
+        readPipe.close();
+        iface.release();
+    }
+
+    /**
+     * Send command to the Android device.
+     * 
+     * @param command
+     * @param payload 
+     */
+    public void sendCommand(byte command, byte[] payload) {
+        byte[] combined = AndroidDevice.getCommandBytes(command, payload);
+        try {
+            getWritePipe().syncSubmit(combined);
+        } catch (UsbException e) {
+            Logger.getLogger(AndroidDevice.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    
+    /**
+     * Combine command and payload into one byte array.
+     * 
+     * @param command
+     * @param payload
+     * @return 
+     */
+    public static byte[] getCommandBytes(byte command, byte[] payload) {
+        byte[] combined = new byte[1 + payload.length];
+        combined[0] = command;
+        System.arraycopy(payload, 0, combined, 1, payload.length);
+        return combined;
     }
 }
