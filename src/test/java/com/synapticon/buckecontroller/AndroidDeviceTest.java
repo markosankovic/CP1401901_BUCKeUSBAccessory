@@ -69,6 +69,37 @@ public class AndroidDeviceTest {
 
     @Ignore
     @Test
+    public void testWriteSpeedToTheDevice() throws InterruptedException, UsbException {
+        // Initialize the Google Nexus 4 (0xD002)
+        AndroidOpenAccessory openAccessory = new AndroidOpenAccessory(new IdentifyingInformation(
+                "sankovicmarko.com",
+                "USBAccessoryService",
+                "USBAccessoryServiceDescription",
+                "0.0.1",
+                "httsp://usbaccessoryservice.sankovicmarko.com",
+                "USBAccessoryServiceSerial"
+        ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
+
+        AndroidDevice androidDevice = new AndroidDevice(openAccessory);
+
+        int times = 50;
+        while (true) {
+            if (times == 0) {
+                break;
+            }
+            int speed = Utils.randInt(0, 50);
+            System.out.println(speed);
+            byte[] buffer = new byte[]{(byte) speed};
+            androidDevice.sendCommand((byte) 0x41, (byte) 0, buffer);
+            times--;
+            Thread.sleep(500);
+        }
+
+        androidDevice.close();
+    }
+
+    @Ignore
+    @Test
     public void testGetCommandBytes() {
         byte[] combined = AndroidDevice.getCommandBytes((byte) 6, (byte) 3, new byte[]{9, 12});
         Assert.assertEquals(6, combined[0]);

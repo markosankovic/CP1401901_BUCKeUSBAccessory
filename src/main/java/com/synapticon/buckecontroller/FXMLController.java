@@ -13,20 +13,17 @@ import javax.usb.UsbException;
 public class FXMLController implements Initializable {
 
     AndroidDevice androidDevice;
-    Thread thread;
+    Thread readThread;
+    Thread speedThread;
 
     @FXML
     private Label label;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        try {
-            System.out.println("You clicked me!");
-            androidDevice.getWritePipe().syncSubmit("Hello World!".getBytes());
-            label.setText("Hello World!");
-        } catch (UsbException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println("You clicked me!");
+        androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
+        label.setText("Hello World!");
     }
 
     @Override
@@ -42,7 +39,7 @@ public class FXMLController implements Initializable {
             ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
             androidDevice = new AndroidDevice(openAccessory);
 
-            thread = new Thread(new Runnable() {
+            readThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
@@ -65,7 +62,24 @@ public class FXMLController implements Initializable {
                 }
             });
 
-            thread.start();
+            readThread.start();
+
+            speedThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // speedThread.start();
 
         } catch (UsbException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
