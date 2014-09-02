@@ -49,8 +49,13 @@ public class FXMLController implements Initializable {
                         try {
                             byte[] data = new byte[16384];
                             int received = androidDevice.getReadPipe().syncSubmit(data);
+
+                            if (data[0] == 0x18) {
+                                System.out.println("Close request initiated. Send 0x19 to the Android device.");
+                                androidDevice.sendCommand((byte) 0x19, (byte) 0, new byte[]{});
+                            }
+
                             System.out.println(received + " bytes received");
-                            androidDevice.getReadPipe();
                             Thread.sleep(1000);
                         } catch (InterruptedException | UsbException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);

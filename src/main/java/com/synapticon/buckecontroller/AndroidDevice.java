@@ -80,12 +80,13 @@ public final class AndroidDevice {
      * Send command to the Android device.
      * 
      * @param command
+     * @param target
      * @param payload 
      */
-    public void sendCommand(byte command, byte[] payload) {
-        byte[] combined = AndroidDevice.getCommandBytes(command, payload);
+    public void sendCommand(byte command, byte target, byte[] payload) {
+        byte[] buffer = AndroidDevice.getCommandBytes(command, target, payload);
         try {
-            getWritePipe().syncSubmit(combined);
+            getWritePipe().syncSubmit(buffer);
         } catch (UsbException e) {
             Logger.getLogger(AndroidDevice.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -98,10 +99,11 @@ public final class AndroidDevice {
      * @param payload
      * @return 
      */
-    public static byte[] getCommandBytes(byte command, byte[] payload) {
-        byte[] combined = new byte[1 + payload.length];
+    public static byte[] getCommandBytes(byte command, byte target, byte[] payload) {
+        byte[] combined = new byte[2 + payload.length];
         combined[0] = command;
-        System.arraycopy(payload, 0, combined, 1, payload.length);
+        combined[1] = target;
+        System.arraycopy(payload, 0, combined, 2, payload.length);
         return combined;
     }
 }

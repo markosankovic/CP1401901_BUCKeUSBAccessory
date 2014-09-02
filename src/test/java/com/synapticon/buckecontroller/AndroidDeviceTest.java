@@ -2,10 +2,12 @@ package com.synapticon.buckecontroller;
 
 import javax.usb.UsbException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AndroidDeviceTest {
 
+    @Ignore
     @Test
     public void testWriteToTheDevice() throws InterruptedException, UsbException {
         // Initialize the Google Nexus 4 (0xD002)
@@ -33,6 +35,7 @@ public class AndroidDeviceTest {
         androidDevice.close();
     }
 
+    @Ignore
     @Test
     public void testReadFromTheDevice() throws InterruptedException, UsbException {
         // Initialize the Google Nexus 4 (0xD002)
@@ -64,11 +67,13 @@ public class AndroidDeviceTest {
         androidDevice.close();
     }
 
+    @Ignore
     @Test
     public void testGetCommandBytes() {
-        byte[] combined = AndroidDevice.getCommandBytes((byte) 6, new byte[]{9, 12});
+        byte[] combined = AndroidDevice.getCommandBytes((byte) 6, (byte) 3, new byte[]{9, 12});
         Assert.assertEquals(6, combined[0]);
-        Assert.assertEquals(9, combined[1]);
-        Assert.assertEquals(12, combined[2]);
+        Assert.assertEquals(3, combined[1]);
+        Assert.assertEquals(9, combined[2]);
+        Assert.assertEquals(12, combined[3]);
     }
 }
