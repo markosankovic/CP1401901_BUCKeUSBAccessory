@@ -2,7 +2,9 @@ package com.synapticon.buckecontroller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -10,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import javax.usb.UsbException;
@@ -32,11 +35,11 @@ public class FXMLController implements Initializable {
             "httsp://usbaccessoryservice.sankovicmarko.com",
             "USBAccessoryServiceSerial");
 
-    public static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
-    public static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
+    static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
+    static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
 
-    public static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
-    public static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
+    static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
+    static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
 
     Thread readThread;
     Thread drivingModeThread;
@@ -65,28 +68,72 @@ public class FXMLController implements Initializable {
         }
     };
 
+    @FXML
+    TextArea logTextArea;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        handleConnect(); // try to connect to Android device on initialize
+
+        // Try to connect to Android device on initialize
+        handleConnect();
+
+        // Setup logger handler (output logs to TextArea)
+        logger.addHandler(new Handler() {
+
+            @Override
+            public void publish(LogRecord record) {
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(record.getLevel()).append(": ").append(record.getMessage()).append("\n");
+                final String message = sb.toString();
+
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (logTextArea != null) {
+                                if (logTextArea.getText().length() == 0) {
+                                    logTextArea.setText(message);
+                                } else {
+                                    logTextArea.selectEnd();
+                                    logTextArea.insertText(logTextArea.getText().length(), message);
+                                }
+                            }
+                        } catch (final Throwable t) {
+                            System.out.println("Unable to append log to text area: " + t.getMessage());
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
     }
 
     @FXML
-    private MenuItem closeMenuItem;
+    MenuItem closeMenuItem;
 
     @FXML
-    private Button connectButton;
+    Button connectButton;
 
     @FXML
-    private ToggleButton modeToggleButton;
-    
+    ToggleButton modeToggleButton;
+
     @FXML
-    private void handleClose() {
+    void handleClose() {
+        logger.log(Level.INFO, "Handle Close");
         Stage stage = (Stage) connectButton.getScene().getWindow();
         closeAndroidDevice();
         stage.close();
     }
 
-    private void closeAndroidDevice() {
+    void closeAndroidDevice() {
         if (androidDevice != null) {
             try {
                 androidDevice.close();
@@ -97,7 +144,7 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    private void handleConnect() {
+    void handleConnect() {
         try {
 
             // Get Android device (switch Android device to USB accessory mode)
@@ -117,7 +164,7 @@ public class FXMLController implements Initializable {
             connectButton.setDisable(true);
 
             logger.log(Level.INFO, "Connected to USB device");
-            
+
         } catch (UsbException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
@@ -126,24 +173,24 @@ public class FXMLController implements Initializable {
     @FXML
     void handleModeChange(ActionEvent event) {
         if (modeToggleButton.isSelected()) {
-             modeToggleButton.setText("DRIVING MODE");
+            modeToggleButton.setText("DRIVING MODE");
         } else {
-            modeToggleButton.setText("STANDSTILL MODE");
+            modeToggleButton.setText("STANDSTILL");
         }
     }
-    
+
     @FXML
-    private void handleSendRandomSpeed(ActionEvent event) {
+    void handleSendRandomSpeed(ActionEvent event) {
         logger.log(Level.INFO, "Handle Send Random Speed");
         androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
     }
 
     @FXML
-    private void handleSendSmartphoneConnected(ActionEvent event) {
+    void handleSendSmartphoneConnected(ActionEvent event) {
         logger.log(Level.INFO, "Handle Send Smartphone Connected");
     }
 
-    protected class ReadRunnable implements Runnable {
+    class ReadRunnable implements Runnable {
 
         @Override
         public void run() {
@@ -156,7 +203,7 @@ public class FXMLController implements Initializable {
                         logger.log(Level.INFO, "Close request initiated. Send 0x19 to the Android device.");
                         androidDevice.sendCommand((byte) 0x19, (byte) 0, new byte[]{});
                     }
-                    logger.log(Level.INFO, "{0} bytes received", received);
+                    logger.log(Level.INFO, String.format("Bytes received: %d", received));
                 } catch (UsbException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                     break;
@@ -165,7 +212,7 @@ public class FXMLController implements Initializable {
         }
     }
 
-    protected class DrivingModeRunnable implements Runnable {
+    class DrivingModeRunnable implements Runnable {
 
         @Override
         public void run() {
