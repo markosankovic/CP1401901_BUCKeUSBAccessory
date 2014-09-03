@@ -7,20 +7,28 @@ import org.junit.Test;
 
 public class AndroidDeviceTest {
 
+    IdentifyingInformation identifyingInformation = new IdentifyingInformation(
+            "sankovicmarko.com",
+            "USBAccessoryService",
+            "USBAccessoryServiceDescription",
+            "0.0.1",
+            "httsp://usbaccessoryservice.sankovicmarko.com",
+            "USBAccessoryServiceSerial");
+
+    static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
+    static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
+
+    static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
+    static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
+
     @Ignore
     @Test
     public void testWriteToTheDevice() throws InterruptedException, UsbException {
-        // Initialize the Google Nexus 4 (0xD002)
-        AndroidOpenAccessory openAccessory = new AndroidOpenAccessory(new IdentifyingInformation(
-                "sankovicmarko.com",
-                "USBAccessoryService",
-                "USBAccessoryServiceDescription",
-                "0.0.1",
-                "httsp://usbaccessoryservice.sankovicmarko.com",
-                "USBAccessoryServiceSerial"
-        ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
 
-        AndroidDevice androidDevice = new AndroidDevice(openAccessory);
+        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
+                identifyingInformation,
+                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
+        );
 
         int times = 5;
         while (true) {
@@ -38,17 +46,11 @@ public class AndroidDeviceTest {
     @Ignore
     @Test
     public void testReadFromTheDevice() throws InterruptedException, UsbException {
-        // Initialize the Google Nexus 4 (0xD002)
-        AndroidOpenAccessory openAccessory = new AndroidOpenAccessory(new IdentifyingInformation(
-                "sankovicmarko.com",
-                "USBAccessoryService",
-                "USBAccessoryServiceDescription",
-                "0.0.1",
-                "httsp://usbaccessoryservice.sankovicmarko.com",
-                "USBAccessoryServiceSerial"
-        ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
 
-        AndroidDevice androidDevice = new AndroidDevice(openAccessory);
+        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
+                identifyingInformation,
+                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
+        );
 
         int times = 3;
         while (true) {
@@ -70,19 +72,13 @@ public class AndroidDeviceTest {
     @Ignore
     @Test
     public void testWriteSpeedToTheDevice() throws InterruptedException, UsbException {
-        // Initialize the Google Nexus 4 (0xD002)
-        AndroidOpenAccessory openAccessory = new AndroidOpenAccessory(new IdentifyingInformation(
-                "sankovicmarko.com",
-                "USBAccessoryService",
-                "USBAccessoryServiceDescription",
-                "0.0.1",
-                "httsp://usbaccessoryservice.sankovicmarko.com",
-                "USBAccessoryServiceSerial"
-        ), (short) 0x18D1, (short) 0xD002, (short) 0x18D1, (short) 0x2D01);
 
-        AndroidDevice androidDevice = new AndroidDevice(openAccessory);
+        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
+                identifyingInformation,
+                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
+        );
 
-        int times = 50;
+        int times = 20;
         while (true) {
             if (times == 0) {
                 break;
@@ -92,7 +88,7 @@ public class AndroidDeviceTest {
             byte[] buffer = new byte[]{(byte) speed};
             androidDevice.sendCommand((byte) 0x41, (byte) 0, buffer);
             times--;
-            Thread.sleep(500);
+            Thread.sleep(100);
         }
 
         androidDevice.close();

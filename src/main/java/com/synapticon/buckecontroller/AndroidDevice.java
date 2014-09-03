@@ -71,17 +71,27 @@ public final class AndroidDevice {
      * @throws javax.usb.UsbException
      */
     public void close() throws UsbException {
-        writePipe.close();
-        readPipe.close();
-        iface.release();
+        if (device.isConfigured()) {
+            if (writePipe.isOpen()) {
+                writePipe.abortAllSubmissions();
+                writePipe.close();
+            }
+            if (readPipe.isOpen()) {
+                readPipe.abortAllSubmissions();
+                readPipe.close();
+            }
+            if (iface.isClaimed()) {
+                iface.release();
+            }
+        }
     }
 
     /**
      * Send command to the Android device.
-     * 
+     *
      * @param command
      * @param target
-     * @param payload 
+     * @param payload
      */
     public void sendCommand(byte command, byte target, byte[] payload) {
         byte[] buffer = AndroidDevice.getCommandBytes(command, target, payload);
@@ -91,13 +101,13 @@ public final class AndroidDevice {
             Logger.getLogger(AndroidDevice.class.getName()).log(Level.SEVERE, null, e);
         }
     }
-    
+
     /**
      * Combine command and payload into one byte array.
-     * 
+     *
      * @param command
      * @param payload
-     * @return 
+     * @return
      */
     public static byte[] getCommandBytes(byte command, byte target, byte[] payload) {
         byte[] combined = new byte[2 + payload.length];
