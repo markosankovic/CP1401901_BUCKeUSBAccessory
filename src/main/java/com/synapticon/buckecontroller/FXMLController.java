@@ -1,6 +1,7 @@
 package com.synapticon.buckecontroller;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import javax.usb.UsbException;
@@ -69,6 +71,16 @@ public class FXMLController implements Initializable {
     };
 
     @FXML
+    TextField codeTextField;
+    String code;
+
+    @FXML
+    void handleCodeTextChanged(ActionEvent event) {
+        logger.log(Level.INFO, "Code text changed: " + codeTextField.getText());
+        code = codeTextField.getText();
+    }
+
+    @FXML
     TextArea logTextArea;
 
     @Override
@@ -76,6 +88,9 @@ public class FXMLController implements Initializable {
 
         // Try to connect to Android device on initialize
         handleConnect();
+        
+        // Set initial code
+        code = codeTextField.getText();
 
         // Setup logger handler (output logs to TextArea)
         logger.addHandler(new Handler() {
@@ -198,12 +213,31 @@ public class FXMLController implements Initializable {
                 try {
                     byte[] data = new byte[16384];
                     int received = androidDevice.getReadPipe().syncSubmit(data);
+                    // logger.log(Level.INFO, String.format("Bytes received: %d", received));
 
-                    if (data[0] == 0x18) {
-                        logger.log(Level.INFO, "Close request initiated. Send 0x19 to the Android device.");
-                        androidDevice.sendCommand((byte) 0x19, (byte) 0, new byte[]{});
+                    switch (data[0]) {
+                        case 0x18:
+                            logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
+                            androidDevice.sendCommand((byte) 0x19, (byte) 0, new byte[]{});
+                            break;
+                        case 0x42:
+                            if (received > 2) {
+                                byte[] codeBytes = Arrays.copyOfRange(data, 2, received);
+                                String verificationCode = new String(codeBytes);
+                                logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
+                                if (code.equals(verificationCode)) {
+                                    logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
+                                    androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{0});
+                                } else {
+                                    logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
+                                    androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{1});
+                                }
+                            }
+                            break;
+                        default:
+                            logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
                     }
-                    logger.log(Level.INFO, String.format("Bytes received: %d", received));
+
                 } catch (UsbException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                     break;

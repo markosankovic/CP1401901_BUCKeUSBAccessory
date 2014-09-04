@@ -28,7 +28,7 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <TextField promptText="Code" text="qwerty" />
+                  <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
                   <ToggleButton fx:id="modeToggleButton" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
                   <MenuButton mnemonicParsing="false" text="Other Actions">
                     <items>
