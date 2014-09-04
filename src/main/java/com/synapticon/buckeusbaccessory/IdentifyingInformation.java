@@ -1,4 +1,4 @@
-package com.synapticon.buckecontroller;
+package com.synapticon.buckeusbaccessory;
 
 public class IdentifyingInformation {
     

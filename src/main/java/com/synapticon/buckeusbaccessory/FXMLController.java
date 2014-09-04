@@ -1,4 +1,4 @@
-package com.synapticon.buckecontroller;
+package com.synapticon.buckeusbaccessory;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -88,7 +88,7 @@ public class FXMLController implements Initializable {
 
         // Try to connect to Android device on initialize
         handleConnect();
-        
+
         // Set initial code
         code = codeTextField.getText();
 
@@ -225,6 +225,7 @@ public class FXMLController implements Initializable {
                                 byte[] codeBytes = Arrays.copyOfRange(data, 2, received);
                                 String verificationCode = new String(codeBytes);
                                 logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
+                                Thread.sleep(500);
                                 if (code.equals(verificationCode)) {
                                     logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
                                     androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{0});
@@ -232,6 +233,9 @@ public class FXMLController implements Initializable {
                                     logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
                                     androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{1});
                                 }
+                            } else {
+                                logger.log(Level.WARNING, "Code is empty.");
+                                androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{2});
                             }
                             break;
                         default:
@@ -241,6 +245,8 @@ public class FXMLController implements Initializable {
                 } catch (UsbException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                     break;
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

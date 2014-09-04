@@ -1,4 +1,4 @@
-package com.synapticon.buckecontroller;
+package com.synapticon.buckeusbaccessory;
 
 import java.util.Random;
 

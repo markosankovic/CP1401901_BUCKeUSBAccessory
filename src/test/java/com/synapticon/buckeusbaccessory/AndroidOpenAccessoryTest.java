@@ -1,5 +1,7 @@
-package com.synapticon.buckecontroller;
+package com.synapticon.buckeusbaccessory;
 
+import com.synapticon.buckeusbaccessory.AndroidOpenAccessory;
+import com.synapticon.buckeusbaccessory.IdentifyingInformation;
 import javax.usb.UsbDevice;
 import javax.usb.UsbException;
 import static org.junit.Assert.assertNotNull;

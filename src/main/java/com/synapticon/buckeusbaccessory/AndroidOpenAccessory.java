@@ -1,4 +1,4 @@
-package com.synapticon.buckecontroller;
+package com.synapticon.buckeusbaccessory;
 
 import java.util.List;
 import java.util.logging.Level;

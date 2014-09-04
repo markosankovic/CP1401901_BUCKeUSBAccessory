@@ -3,20 +3,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.synapticon</groupId>
-    <artifactId>BUCKeController</artifactId>
+    <artifactId>BUCKeUSBAccessory</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BUCKeController</name>
+    <name>BUCKeUSBAccessory</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>com.synapticon.buckecontroller.MainApp</mainClass>
+        <mainClass>com.synapticon.buckeusbaccessory.MainApp</mainClass>
     </properties>
 
     <organization>
         <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
+        <name>Synapticon</name>
     </organization>
 
     <build>
