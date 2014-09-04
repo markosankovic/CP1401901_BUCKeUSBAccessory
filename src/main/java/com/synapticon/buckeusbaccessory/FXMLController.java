@@ -30,12 +30,12 @@ public class FXMLController implements Initializable {
     AndroidDevice androidDevice;
 
     IdentifyingInformation identifyingInformation = new IdentifyingInformation(
-            "sankovicmarko.com",
-            "USBAccessoryService",
-            "USBAccessoryServiceDescription",
+            "Synapticon",
+            "BUCKe USB Accessory",
+            "JavaFX application that simulates the On-Board Controller",
             "0.0.1",
-            "httsp://usbaccessoryservice.sankovicmarko.com",
-            "USBAccessoryServiceSerial");
+            "http://bucke.synapticon.com/",
+            "0");
 
     static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
     static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
