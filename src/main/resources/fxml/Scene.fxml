@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="576.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.synapticon.buckeusbaccessory.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.synapticon.buckeusbaccessory.FXMLController">
     <children>
       <VBox prefHeight="576.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -29,7 +29,7 @@
                      </padding>
                   </Label>
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
-                  <ToggleButton fx:id="modeToggleButton" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
+                  <ToggleButton fx:id="modeToggleButton" disable="true" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
                   <MenuButton mnemonicParsing="false" text="Other Actions">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#handleSendSmartphoneConnected" text="Send smartphone connected" />

@@ -189,8 +189,12 @@ public class FXMLController implements Initializable {
     void handleModeChange(ActionEvent event) {
         if (modeToggleButton.isSelected()) {
             modeToggleButton.setText("DRIVING MODE");
+            modeToggleButton.setDisable(false);
         } else {
             modeToggleButton.setText("STANDSTILL");
+            modeToggleButton.setDisable(true);
+            drivingModeThread.interrupt();
+            drivingModeThread = null;
         }
     }
 
@@ -238,6 +242,22 @@ public class FXMLController implements Initializable {
                                 androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{2});
                             }
                             break;
+                        case 0x43:
+                            logger.log(Level.INFO, "Switch to driving mode request.");
+                            
+                            drivingModeThread = new Thread(new DrivingModeRunnable());
+                            drivingModeThread.start();
+
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    modeToggleButton.setText("DRIVING MODE");
+                                    modeToggleButton.setDisable(false);
+                                    modeToggleButton.setSelected(true);
+                                }
+                            });
+
+                            break;
                         default:
                             logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
                     }
@@ -261,7 +281,7 @@ public class FXMLController implements Initializable {
                     androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
-                    logger.log(Level.SEVERE, null, ex);
+                    logger.log(Level.INFO, "Driving mode thread is interrupted.");
                     break;
                 }
             }
