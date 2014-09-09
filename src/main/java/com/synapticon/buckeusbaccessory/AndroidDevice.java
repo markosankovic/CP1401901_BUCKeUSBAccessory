@@ -93,7 +93,7 @@ public final class AndroidDevice {
      * @param payload
      */
     public void sendMessage(short message, byte[] payload) {
-        byte[] buffer = AndroidDevice.combineMessageAndPayloadBytes(message, payload);
+        byte[] buffer = Utils.prependShortToByteArray(message, payload);
         try {
             getWritePipe().syncSubmit(buffer);
         } catch (UsbException e) {
@@ -108,22 +108,5 @@ public final class AndroidDevice {
      */
     public void sendMessage(short message) {
         this.sendMessage(message, new byte[]{});
-    }
-
-    /**
-     * Combine message and payload bytes into one byte array.
-     *
-     * @param message
-     * @param payload
-     * @return
-     */
-    public static byte[] combineMessageAndPayloadBytes(short message, byte[] payload) {
-        byte[] combined = new byte[2 + payload.length];
-        byte[] messageBytes = new byte[2];
-        messageBytes[0] = (byte) (message >> 8);
-        messageBytes[1] = (byte) (message & 0xFF);
-        System.arraycopy(messageBytes, 0, combined, 0, 2);
-        System.arraycopy(payload, 0, combined, 2, payload.length);
-        return combined;
     }
 }

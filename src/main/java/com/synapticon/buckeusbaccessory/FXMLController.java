@@ -46,6 +46,8 @@ public class FXMLController implements Initializable {
     Thread readThread;
     Thread drivingModeThread;
 
+    byte states = 0x00;
+
     UsbDeviceListener usbDeviceListener = new UsbDeviceListener() {
         @Override
         public void usbDeviceDetached(UsbDeviceEvent ude) {
@@ -148,6 +150,42 @@ public class FXMLController implements Initializable {
         stage.close();
     }
 
+    @FXML
+    void handleBoostToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x01);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
+    @FXML
+    void handleOverheatingToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x02);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
+    @FXML
+    void handleLowBeamToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x04);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
+    @FXML
+    void handleHighBeamToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x08);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
+    @FXML
+    void handleLeftTurnSignalToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x10);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
+    @FXML
+    void handleRightTurnSignalToggle(ActionEvent event) {
+        states = (byte) (states ^ 0x20);
+        logger.log(Level.INFO, String.format("States: %d", states));
+    }
+
     void closeAndroidDevice() {
         if (androidDevice != null) {
             try {
@@ -213,8 +251,8 @@ public class FXMLController implements Initializable {
                     int received = androidDevice.getReadPipe().syncSubmit(data);
                     // logger.log(Level.INFO, String.format("Bytes received: %d", received));
 
-                    short command = twoBytesToShort(data[0], data[1]);
-                    
+                    short command = Utils.twoBytesToShort(data[0], data[1]);
+
                     switch (command) {
                         case OnBoardControllerConstants.REQUEST_CLOSE_COMMAND:
                             logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
@@ -261,29 +299,23 @@ public class FXMLController implements Initializable {
                 } catch (UsbException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                     break;
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
 
-    /**
-     * Convert two bytes to short.
-     *
-     * @param b1
-     * @param b2
-     * @return
-     */
-    public static short twoBytesToShort(byte b1, byte b2) {
-        return (short) ((b1 << 8) | (b2 & 0xFF));
-    }
-    
     class DrivingModeRunnable implements Runnable {
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, new byte[]{(byte) Utils.randInt(0, 50)});
+                    byte[] payload = new byte[6];
+                    payload[0] = states;
+                    payload[1] = (byte) Utils.randInt(0, 50);
+                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, payload);
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
                     logger.log(Level.INFO, "Driving mode thread is interrupted.");

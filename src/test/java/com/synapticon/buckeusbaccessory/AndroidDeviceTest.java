@@ -97,7 +97,7 @@ public class AndroidDeviceTest {
     @Ignore
     @Test
     public void testGetCommandBytes() {
-        byte[] combined = AndroidDevice.combineMessageAndPayloadBytes((short) 6, new byte[]{9, 12});
+        byte[] combined = Utils.prependShortToByteArray((short) 6, new byte[]{9, 12});
         Assert.assertEquals(6, combined[0]);
         Assert.assertEquals(3, combined[1]);
         Assert.assertEquals(9, combined[2]);

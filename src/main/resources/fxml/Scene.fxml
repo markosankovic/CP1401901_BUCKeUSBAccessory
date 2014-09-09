@@ -30,12 +30,22 @@
                   </Label>
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
                   <ToggleButton fx:id="modeToggleButton" disable="true" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
-                  <MenuButton mnemonicParsing="false" text="Other Actions">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#handleSendSmartphoneConnected" text="Send smartphone connected" />
-                    </items>
-                  </MenuButton>
               </items>
+            </ToolBar>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+               <items>
+                  <Label text="States:">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <ToggleButton mnemonicParsing="false" onAction="#handleBoostToggle" text="BOOST" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleOverheatingToggle" text="OVERHEATING" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleLowBeamToggle" text="LOW BEAM" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleHighBeamToggle" text="HIGH BEAM" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggle" text="LEFT TURN SIGNAL" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggle" text="RIGHT TURN SIGNAL" />
+               </items>
             </ToolBar>
             <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
