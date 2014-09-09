@@ -87,14 +87,13 @@ public final class AndroidDevice {
     }
 
     /**
-     * Send command to the Android device.
+     * Send message to the Android device.
      *
-     * @param command
-     * @param target
+     * @param message
      * @param payload
      */
-    public void sendCommand(byte command, byte target, byte[] payload) {
-        byte[] buffer = AndroidDevice.getCommandBytes(command, target, payload);
+    public void sendMessage(short message, byte[] payload) {
+        byte[] buffer = AndroidDevice.combineMessageAndPayloadBytes(message, payload);
         try {
             getWritePipe().syncSubmit(buffer);
         } catch (UsbException e) {
@@ -103,16 +102,27 @@ public final class AndroidDevice {
     }
 
     /**
-     * Combine command and payload into one byte array.
+     * Send message to the Android device with empty payload.
      *
-     * @param command
+     * @param message
+     */
+    public void sendMessage(short message) {
+        this.sendMessage(message, new byte[]{});
+    }
+
+    /**
+     * Combine message and payload bytes into one byte array.
+     *
+     * @param message
      * @param payload
      * @return
      */
-    public static byte[] getCommandBytes(byte command, byte target, byte[] payload) {
+    public static byte[] combineMessageAndPayloadBytes(short message, byte[] payload) {
         byte[] combined = new byte[2 + payload.length];
-        combined[0] = command;
-        combined[1] = target;
+        byte[] messageBytes = new byte[2];
+        messageBytes[0] = (byte) (message >> 8);
+        messageBytes[1] = (byte) (message & 0xFF);
+        System.arraycopy(messageBytes, 0, combined, 0, 2);
         System.arraycopy(payload, 0, combined, 2, payload.length);
         return combined;
     }

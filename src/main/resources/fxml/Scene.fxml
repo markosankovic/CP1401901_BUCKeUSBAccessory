@@ -33,7 +33,6 @@
                   <MenuButton mnemonicParsing="false" text="Other Actions">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#handleSendSmartphoneConnected" text="Send smartphone connected" />
-                      <MenuItem mnemonicParsing="false" onAction="#handleSendRandomSpeed" text="Send random speed" />
                     </items>
                   </MenuButton>
               </items>

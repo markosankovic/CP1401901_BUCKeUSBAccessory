@@ -1,9 +1,5 @@
 package com.synapticon.buckeusbaccessory;
 
-import com.synapticon.buckeusbaccessory.AndroidOpenAccessory;
-import com.synapticon.buckeusbaccessory.Utils;
-import com.synapticon.buckeusbaccessory.AndroidDevice;
-import com.synapticon.buckeusbaccessory.IdentifyingInformation;
 import javax.usb.UsbException;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -90,7 +86,7 @@ public class AndroidDeviceTest {
             int speed = Utils.randInt(0, 50);
             System.out.println(speed);
             byte[] buffer = new byte[]{(byte) speed};
-            androidDevice.sendCommand((byte) 0x41, (byte) 0, buffer);
+            androidDevice.sendMessage((short) 0x41, buffer);
             times--;
             Thread.sleep(100);
         }
@@ -101,7 +97,7 @@ public class AndroidDeviceTest {
     @Ignore
     @Test
     public void testGetCommandBytes() {
-        byte[] combined = AndroidDevice.getCommandBytes((byte) 6, (byte) 3, new byte[]{9, 12});
+        byte[] combined = AndroidDevice.combineMessageAndPayloadBytes((short) 6, new byte[]{9, 12});
         Assert.assertEquals(6, combined[0]);
         Assert.assertEquals(3, combined[1]);
         Assert.assertEquals(9, combined[2]);

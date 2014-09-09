@@ -199,12 +199,6 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    void handleSendRandomSpeed(ActionEvent event) {
-        logger.log(Level.INFO, "Handle Send Random Speed");
-        androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
-    }
-
-    @FXML
     void handleSendSmartphoneConnected(ActionEvent event) {
         logger.log(Level.INFO, "Handle Send Smartphone Connected");
     }
@@ -219,12 +213,14 @@ public class FXMLController implements Initializable {
                     int received = androidDevice.getReadPipe().syncSubmit(data);
                     // logger.log(Level.INFO, String.format("Bytes received: %d", received));
 
-                    switch (data[0]) {
-                        case 0x18:
+                    short command = twoBytesToShort(data[0], data[1]);
+                    
+                    switch (command) {
+                        case OnBoardControllerConstants.REQUEST_CLOSE_COMMAND:
                             logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
-                            androidDevice.sendCommand((byte) 0x19, (byte) 0, new byte[]{});
+                            androidDevice.sendMessage(OnBoardControllerConstants.CLOSE_MESSAGE, new byte[]{});
                             break;
-                        case 0x42:
+                        case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
                             if (received > 2) {
                                 byte[] codeBytes = Arrays.copyOfRange(data, 2, received);
                                 String verificationCode = new String(codeBytes);
@@ -232,19 +228,19 @@ public class FXMLController implements Initializable {
                                 Thread.sleep(500);
                                 if (code.equals(verificationCode)) {
                                     logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
-                                    androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{0});
+                                    androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{0});
                                 } else {
                                     logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
-                                    androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{1});
+                                    androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{1});
                                 }
                             } else {
                                 logger.log(Level.WARNING, "Code is empty.");
-                                androidDevice.sendCommand((byte) 0x42, (byte) 0, new byte[]{2});
+                                androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{2});
                             }
                             break;
-                        case 0x43:
+                        case OnBoardControllerConstants.SWITCH_TO_DRIVING_MODE_COMMAND:
                             logger.log(Level.INFO, "Switch to driving mode request.");
-                            
+
                             drivingModeThread = new Thread(new DrivingModeRunnable());
                             drivingModeThread.start();
 
@@ -265,20 +261,29 @@ public class FXMLController implements Initializable {
                 } catch (UsbException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                     break;
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
 
+    /**
+     * Convert two bytes to short.
+     *
+     * @param b1
+     * @param b2
+     * @return
+     */
+    public static short twoBytesToShort(byte b1, byte b2) {
+        return (short) ((b1 << 8) | (b2 & 0xFF));
+    }
+    
     class DrivingModeRunnable implements Runnable {
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    androidDevice.sendCommand((byte) 0x41, (byte) 0, new byte[]{(byte) Utils.randInt(0, 50)});
+                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, new byte[]{(byte) Utils.randInt(0, 50)});
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
                     logger.log(Level.INFO, "Driving mode thread is interrupted.");
