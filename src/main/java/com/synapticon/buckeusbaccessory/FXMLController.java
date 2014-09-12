@@ -8,11 +8,17 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -77,6 +83,14 @@ public class FXMLController implements Initializable {
     String code;
 
     @FXML
+    Slider speedSlider;
+    byte speed = 0x05;
+
+    @FXML
+    ComboBox sendingIntervalComboBox;
+    int sendingInterval;
+
+    @FXML
     void handleCodeTextChanged(ActionEvent event) {
         logger.log(Level.INFO, "Code text changed: " + codeTextField.getText());
         code = codeTextField.getText();
@@ -93,6 +107,23 @@ public class FXMLController implements Initializable {
 
         // Set initial code
         code = codeTextField.getText();
+
+        // Speed Slider
+        speedSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                byte newSpeed = newValue.byteValue();
+                if (speed != newSpeed) {
+                    speed = newSpeed;
+                    logger.log(Level.INFO, String.format("New speed value: %s", String.valueOf(speed)));
+                }
+            }
+        });
+
+        // Sending Interval
+        ObservableList<Integer> intervals = FXCollections.observableArrayList(10, 50, 100, 200, 500, 1000, 3000);
+        sendingIntervalComboBox.setItems(intervals);
 
         // Setup logger handler (output logs to TextArea)
         logger.addHandler(new Handler() {
@@ -314,9 +345,23 @@ public class FXMLController implements Initializable {
                 try {
                     byte[] payload = new byte[6];
                     payload[0] = states;
-                    payload[1] = (byte) Utils.randInt(0, 50);
+                    payload[1] = speed;
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, payload);
-                    Thread.sleep(200);
+
+                    Integer interval = (Integer) sendingIntervalComboBox.getSelectionModel().getSelectedItem();
+
+                    if (interval == null) {
+                        interval = (Integer) sendingIntervalComboBox.getItems().get(1);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendingIntervalComboBox.setValue(sendingIntervalComboBox.getItems().get(1));
+                            }
+                        });
+                    }
+
+                    Thread.sleep(interval);
+
                 } catch (InterruptedException ex) {
                     logger.log(Level.INFO, "Driving mode thread is interrupted.");
                     break;

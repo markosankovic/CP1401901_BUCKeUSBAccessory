@@ -29,8 +29,33 @@
                      </padding>
                   </Label>
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
-                  <ToggleButton fx:id="modeToggleButton" disable="true" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
               </items>
+            </ToolBar>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+               <items>
+                  <Label text="Mode:">
+                     <opaqueInsets>
+                        <Insets left="10.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <ToggleButton fx:id="modeToggleButton" disable="true" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
+                  <Label text="Speed:">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <Slider fx:id="speedSlider" majorTickUnit="10.0" max="50.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" />
+                  <ToggleButton disable="true" mnemonicParsing="false" text="Simulate Throttle">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </ToggleButton>
+                  <ComboBox fx:id="sendingIntervalComboBox" prefWidth="150.0" promptText="Sending Interval" />
+                  <Label text="ms" />
+               </items>
             </ToolBar>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
                <items>
