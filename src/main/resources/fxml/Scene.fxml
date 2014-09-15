@@ -48,7 +48,7 @@
                      </padding>
                   </Label>
                   <Slider fx:id="speedSlider" majorTickUnit="10.0" max="50.0" minorTickCount="1" snapToTicks="true" value="5.0" />
-                  <ToggleButton mnemonicParsing="false" text="Simulate Driving">
+                  <ToggleButton disable="true" mnemonicParsing="false" text="Simulate Driving">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
