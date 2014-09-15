@@ -1,6 +1,7 @@
 package com.synapticon.buckeusbaccessory;
 
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Handler;
@@ -87,6 +88,18 @@ public class FXMLController implements Initializable {
     byte speed = 0x05;
 
     @FXML
+    Slider recuperationStateSlider;
+    short recuperationState = 0x00;
+
+    @FXML
+    Slider remainingDistanceSlider;
+    short remainingDistance = 0x00;
+
+    @FXML
+    Slider powerConsumptionSlider;
+    short powerConsumption = 0x00;
+
+    @FXML
     ComboBox sendingIntervalComboBox;
     int sendingInterval;
 
@@ -117,6 +130,45 @@ public class FXMLController implements Initializable {
                 if (speed != newSpeed) {
                     speed = newSpeed;
                     logger.log(Level.INFO, String.format("New speed value: %s", String.valueOf(speed)));
+                }
+            }
+        });
+
+        // Recuperation State Slider
+        recuperationStateSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                short newRecuperationState = newValue.shortValue();
+                if (recuperationState != newRecuperationState) {
+                    recuperationState = newRecuperationState;
+                    logger.log(Level.INFO, String.format("New recuperation state value: %s", String.valueOf(recuperationState)));
+                }
+            }
+        });
+
+        // Remaining Distance Slider
+        remainingDistanceSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                short newRemainingDistance = newValue.shortValue();
+                if (remainingDistance != newRemainingDistance) {
+                    remainingDistance = newRemainingDistance;
+                    logger.log(Level.INFO, String.format("New remaining distance value: %s", String.valueOf(remainingDistance)));
+                }
+            }
+        });
+
+        // Power Consumption Slider
+        powerConsumptionSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                short newPowerConsumption = newValue.shortValue();
+                if (powerConsumption != newPowerConsumption) {
+                    powerConsumption = newPowerConsumption;
+                    logger.log(Level.INFO, String.format("New power consumption value: %s", String.valueOf(powerConsumption)));
                 }
             }
         });
@@ -172,6 +224,9 @@ public class FXMLController implements Initializable {
 
     @FXML
     ToggleButton modeToggleButton;
+
+    @FXML
+    ToggleButton simulateDrivingToggle;
 
     @FXML
     void handleClose() {
@@ -343,10 +398,54 @@ public class FXMLController implements Initializable {
         public void run() {
             while (true) {
                 try {
-                    byte[] payload = new byte[6];
-                    payload[0] = states;
-                    payload[1] = speed;
-                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, payload);
+                    ByteBuffer buffer = ByteBuffer.allocate(8);
+
+                    buffer.put(states);
+                    buffer.put(speed);
+                    buffer.putShort(recuperationState);
+                    buffer.putShort(remainingDistance);
+                    buffer.putShort(powerConsumption);
+                    
+                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
+
+                    Integer interval = (Integer) sendingIntervalComboBox.getSelectionModel().getSelectedItem();
+
+                    if (interval == null) {
+                        interval = (Integer) sendingIntervalComboBox.getItems().get(1);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendingIntervalComboBox.setValue(sendingIntervalComboBox.getItems().get(1));
+                            }
+                        });
+                    }
+
+                    Thread.sleep(interval);
+
+                } catch (InterruptedException ex) {
+                    logger.log(Level.INFO, "Driving mode thread is interrupted.");
+                    break;
+                }
+            }
+        }
+    }
+
+    class SimulateDrivingModeRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+
+                    ByteBuffer buffer = ByteBuffer.allocate(8);
+
+                    buffer.put(states);
+                    buffer.put(speed);
+                    buffer.putShort(recuperationState);
+                    buffer.putShort(remainingDistance);
+                    buffer.putShort(powerConsumption);
+
+                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
 
                     Integer interval = (Integer) sendingIntervalComboBox.getSelectionModel().getSelectedItem();
 
