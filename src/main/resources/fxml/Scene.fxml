@@ -66,7 +66,7 @@
                   </Label>
                   <ToggleButton mnemonicParsing="false" onAction="#handleBoostToggle" text="BOOST" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleOverheatingToggle" text="OVERHEATING" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleLowBeamToggle" text="LOW BEAM" />
+                  <ToggleButton disable="true" mnemonicParsing="false" onAction="#handleLowBeamToggle" text="LOW BEAM" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleHighBeamToggle" text="HIGH BEAM" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggle" text="LEFT TURN SIGNAL" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggle" text="RIGHT TURN SIGNAL" />
