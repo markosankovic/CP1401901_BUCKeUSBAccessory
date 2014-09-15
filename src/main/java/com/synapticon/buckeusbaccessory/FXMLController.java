@@ -44,8 +44,10 @@ public class FXMLController implements Initializable {
             "http://bucke.synapticon.com/",
             "0");
 
-    static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
-    static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
+    // static final short DEVICE_VENDOR_ID = (short) 0x18D1; // Google
+    // static final short DEVICE_PRODUCT_ID = (short) 0xD002; // Google Nexus 4
+    static final short DEVICE_VENDOR_ID = (short) 0x0bb4; // HTC Corporation
+    static final short DEVICE_PRODUCT_ID = (short) 0x0f63; // HTC One mini
 
     static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
     static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
@@ -405,7 +407,7 @@ public class FXMLController implements Initializable {
                     buffer.putShort(recuperationState);
                     buffer.putShort(remainingDistance);
                     buffer.putShort(powerConsumption);
-                    
+
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
 
                     Integer interval = (Integer) sendingIntervalComboBox.getSelectionModel().getSelectedItem();
