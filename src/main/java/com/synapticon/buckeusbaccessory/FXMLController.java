@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -81,14 +84,18 @@ public class FXMLController implements Initializable {
     String code;
 
     @FXML
-    ComboBox sendIntervalComboBox;
-
-    @FXML
     void handleCodeTextChanged(ActionEvent event) {
         logger.log(Level.INFO, "Code text changed: " + codeTextField.getText());
         code = codeTextField.getText();
     }
 
+    @FXML
+    ComboBox sendIntervalComboBox;
+
+    @FXML
+    Slider speedSlider;
+    short speed;
+    
     @FXML
     TextArea logTextArea;
 
@@ -102,6 +109,16 @@ public class FXMLController implements Initializable {
         ObservableList<Integer> intervals = FXCollections.observableArrayList(5, 10, 15, 20, 50, 100, 200, 500, 1000, 3000);
         sendIntervalComboBox.setItems(intervals);
 
+        // Speed Slider
+        speedSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                speed = newValue.shortValue();
+                logger.log(Level.INFO, String.format("New speed value: %s", String.valueOf(speed)));
+            }
+        });
+        
         // Setup logger handler (output logs to TextArea)
         logger.addHandler(new Handler() {
 
@@ -286,7 +303,7 @@ public class FXMLController implements Initializable {
                     ByteBuffer buffer = ByteBuffer.allocate(10);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.put(states);
-                    buffer.putShort((short) 64); // SPEED
+                    buffer.putShort(speed); // SPEED
                     buffer.putShort((short) -128); // BATTERY_POWER
                     buffer.put((byte) 0x4D); // BATTERY_STATE_OF_CHARGE
                     buffer.put((byte) 0xFF); // REMAINING_DISTANCE

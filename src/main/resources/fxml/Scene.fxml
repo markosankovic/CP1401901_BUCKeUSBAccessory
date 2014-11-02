@@ -24,11 +24,6 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
                   <Button fx:id="switchToUSBAccessoryModeButton" mnemonicParsing="false" onAction="#onSwitchToUSBAccessoryMode" text="Switch to USB accessory mode" />
-                  <Label text="Code:">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
                   <ComboBox fx:id="sendIntervalComboBox" prefWidth="150.0" promptText="Send Interval" />
                   <Label text="ms" />
@@ -49,6 +44,14 @@
                   <ToggleButton mnemonicParsing="false" onAction="#onGasThrottleIdleStateToggle" selected="true" text="GAS THROTTLE IDLE STATE" />
                </items>
             </ToolBar>
+            <HBox prefHeight="120.0" prefWidth="1004.0" spacing="10.0">
+               <children>
+                  <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
+               </children>
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </HBox>
             <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
