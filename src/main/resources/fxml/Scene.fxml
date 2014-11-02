@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -15,47 +16,23 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#handleClose" text="Close" />
+                    <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
-                  <Button fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnect" text="Connect" />
+                  <Button fx:id="switchToUSBAccessoryModeButton" mnemonicParsing="false" onAction="#onSwitchToUSBAccessoryMode" text="Switch to USB accessory mode" />
                   <Label text="Code:">
                      <padding>
                         <Insets left="10.0" />
                      </padding>
                   </Label>
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
-              </items>
-            </ToolBar>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
-               <items>
-                  <Label text="Mode:">
-                     <opaqueInsets>
-                        <Insets left="10.0" />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-                  <ToggleButton fx:id="modeToggleButton" disable="true" mnemonicParsing="false" onAction="#handleModeChange" text="STANDSTILL" />
-                  <Label text="Speed:">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-                  <Slider fx:id="speedSlider" majorTickUnit="10.0" max="50.0" minorTickCount="1" snapToTicks="true" value="5.0" />
-                  <ToggleButton disable="true" mnemonicParsing="false" text="Simulate Driving">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </ToggleButton>
-                  <ComboBox fx:id="sendingIntervalComboBox" prefWidth="150.0" promptText="Sending Interval" />
+                  <ComboBox fx:id="sendIntervalComboBox" prefWidth="150.0" promptText="Send Interval" />
                   <Label text="ms" />
-               </items>
+              </items>
             </ToolBar>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
                <items>
@@ -64,30 +41,12 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <ToggleButton mnemonicParsing="false" onAction="#handleHighBeamToggle" text="HIGH BEAM" />
-                  <ToggleButton disable="true" mnemonicParsing="false" onAction="#handleLowBeamToggle" text="LOW BEAM" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggle" text="LEFT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggle" text="RIGHT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleOverheatingToggle" text="OVERHEATING" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleBoostToggle" text="BOOST" />
-               </items>
-            </ToolBar>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
-               <items>
-                  <Label text="Recuperation state:" />
-                  <Slider fx:id="recuperationStateSlider" blockIncrement="1.0" showTickLabels="true" showTickMarks="true" />
-                  <Label text="Remaining distance:">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-                  <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" showTickLabels="true" showTickMarks="true" />
-                  <Label text="Power consumption">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-                  <Slider fx:id="powerConsumptionSlider" blockIncrement="1.0" showTickLabels="true" showTickMarks="true" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onSmartphoneConnected" selected="true" text="SMARTPHONE CONNECTED" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onHeadlightToggle" text="HEADLIGHT" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onCameraToggle" text="CAMERA" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onLeftTurnSignalToggle" text="LEFT TURN SIGNAL" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onRightTurnSignalToggle" text="RIGHT TURN SIGNAL" />
+                  <ToggleButton mnemonicParsing="false" onAction="#onGasThrottleIdleStateToggle" selected="true" text="GAS THROTTLE IDLE STATE" />
                </items>
             </ToolBar>
             <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
