@@ -81,7 +81,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     TextField codeTextField;
-    String code;
+    String code = "qwerty";
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
@@ -94,15 +94,23 @@ public class FXMLController implements Initializable {
 
     @FXML
     Slider speedSlider;
-    short speed;
+    short speed = 0;
  
     @FXML
     Slider batteryPowerSlider;
-    short batteryPower;
+    short batteryPower = 0;
 
     @FXML
     Slider batteryStateOfChargeSlider;
-    byte batteryStateOfCharge;
+    byte batteryStateOfCharge = 80;
+
+    @FXML
+    Slider remainingDistanceSlider;
+    short remainingDistance = 150;
+
+    @FXML
+    Slider totalDistanceSlider;
+    int totalDistance = 950;
 
     @FXML
     TextArea logTextArea;
@@ -141,6 +149,24 @@ public class FXMLController implements Initializable {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 batteryStateOfCharge = newValue.byteValue();
                 logger.log(Level.INFO, String.format("New battery state of charge value: %s", String.valueOf(batteryStateOfCharge)));
+            }
+        });
+
+        // Remaining Distance Slider
+        remainingDistanceSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                remainingDistance = newValue.byteValue();
+                logger.log(Level.INFO, String.format("New remaining distance value: %s", String.valueOf(remainingDistance)));
+            }
+        });
+
+        // Total Distance Slider
+        totalDistanceSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                totalDistance = newValue.intValue();
+                logger.log(Level.INFO, String.format("New total distance value: %s", String.valueOf(totalDistance)));
             }
         });
 
@@ -331,8 +357,8 @@ public class FXMLController implements Initializable {
                     buffer.putShort(speed); // SPEED
                     buffer.putShort(batteryPower); // BATTERY_POWER
                     buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
-                    buffer.put((byte) 0xFF); // REMAINING_DISTANCE
-                    buffer.putShort((short) 48347);
+                    buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
+                    buffer.putShort((short) totalDistance);
                     buffer.put((byte) 0x20);
                     
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
