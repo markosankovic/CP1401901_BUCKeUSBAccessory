@@ -113,6 +113,10 @@ public class FXMLController implements Initializable {
     int totalDistance = 950;
 
     @FXML
+    Slider remainingBoostSlider;
+    byte remainingBoost = 20;
+    
+    @FXML
     TextArea logTextArea;
 
     @Override
@@ -167,6 +171,15 @@ public class FXMLController implements Initializable {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 totalDistance = newValue.intValue();
                 logger.log(Level.INFO, String.format("New total distance value: %s", String.valueOf(totalDistance)));
+            }
+        });
+
+        // Remaining Boost Slider
+        remainingBoostSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                remainingBoost = newValue.byteValue();
+                logger.log(Level.INFO, String.format("New remaining boost value: %s", String.valueOf(remainingBoost)));
             }
         });
 
@@ -286,7 +299,7 @@ public class FXMLController implements Initializable {
             // Start new state message thread
             stateMessageThread = new Thread(new StateMessageRunnable());
             stateMessageThread.start();
-            
+
             // Disable connect button
             switchToUSBAccessoryModeButton.setDisable(true);
 
@@ -359,7 +372,7 @@ public class FXMLController implements Initializable {
                     buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
                     buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
                     buffer.putShort((short) totalDistance);
-                    buffer.put((byte) 0x20);
+                    buffer.put((byte) remainingBoost);
                     
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
                     
