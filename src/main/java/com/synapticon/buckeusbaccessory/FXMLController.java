@@ -95,7 +95,15 @@ public class FXMLController implements Initializable {
     @FXML
     Slider speedSlider;
     short speed;
-    
+ 
+    @FXML
+    Slider batteryPowerSlider;
+    short batteryPower;
+
+    @FXML
+    Slider batteryStateOfChargeSlider;
+    byte batteryStateOfCharge;
+
     @FXML
     TextArea logTextArea;
 
@@ -111,14 +119,31 @@ public class FXMLController implements Initializable {
 
         // Speed Slider
         speedSlider.valueProperty().addListener(new ChangeListener<Number>() {
-
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 speed = newValue.shortValue();
                 logger.log(Level.INFO, String.format("New speed value: %s", String.valueOf(speed)));
             }
         });
-        
+
+        // Battery Power Slider
+        batteryPowerSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                batteryPower = newValue.shortValue();
+                logger.log(Level.INFO, String.format("New battery power value: %s", String.valueOf(batteryPower)));
+            }
+        });
+
+        // Battery State of Charge Slider
+        batteryStateOfChargeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                batteryStateOfCharge = newValue.byteValue();
+                logger.log(Level.INFO, String.format("New battery state of charge value: %s", String.valueOf(batteryStateOfCharge)));
+            }
+        });
+
         // Setup logger handler (output logs to TextArea)
         logger.addHandler(new Handler() {
 
@@ -304,8 +329,8 @@ public class FXMLController implements Initializable {
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.put(states);
                     buffer.putShort(speed); // SPEED
-                    buffer.putShort((short) -128); // BATTERY_POWER
-                    buffer.put((byte) 0x4D); // BATTERY_STATE_OF_CHARGE
+                    buffer.putShort(batteryPower); // BATTERY_POWER
+                    buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
                     buffer.put((byte) 0xFF); // REMAINING_DISTANCE
                     buffer.putShort((short) 48347);
                     buffer.put((byte) 0x20);
