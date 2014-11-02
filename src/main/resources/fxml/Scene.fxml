@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
@@ -44,20 +45,62 @@
                   <ToggleButton mnemonicParsing="false" onAction="#onGasThrottleIdleStateToggle" selected="true" text="GAS THROTTLE IDLE STATE" />
                </items>
             </ToolBar>
-            <HBox prefHeight="120.0" prefWidth="1004.0" spacing="10.0">
+            <GridPane hgap="10.0" prefHeight="120.0" prefWidth="1002.0">
+              <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="138.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="45.0" minHeight="0.0" prefHeight="12.0" vgrow="SOMETIMES" />
+              </rowConstraints>
                <children>
                   <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
-                  <Slider fx:id="batteryPowerSlider" blockIncrement="1.0" majorTickUnit="512.0" max="512.0" min="-512.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-                  <Slider fx:id="batteryStateOfChargeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="80.0" />
-                  <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" majorTickUnit="50.0" max="255.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="150.0" />
-                  <Slider fx:id="totalDistanceSlider" blockIncrement="1.0" majorTickUnit="16300.0" max="65535.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="950.0" />
-                  <Slider fx:id="remainingBoostSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="20.0" />
+                  <Slider fx:id="batteryPowerSlider" blockIncrement="1.0" majorTickUnit="512.0" max="512.0" min="-512.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" />
+                  <Slider fx:id="batteryStateOfChargeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="80.0" GridPane.columnIndex="2" />
+                  <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" majorTickUnit="50.0" max="255.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="150.0" GridPane.columnIndex="3" />
+                  <Slider fx:id="totalDistanceSlider" blockIncrement="1.0" majorTickUnit="16300.0" max="65535.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="950.0" GridPane.columnIndex="4" />
+                  <Slider fx:id="remainingBoostSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="20.0" GridPane.columnIndex="5" />
+                  <Label text="VEHICLE VELOCITY (km/h)" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label text="BATTERY POWER (A)" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label text="BATTERY STATE OF CHARGE (%)" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label text="REMAINING DISTANCE (km)" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label text="TOTAL DISTANCE (km)" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label text="REMAINING BOOST (%)" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
                </children>
                <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
+                  <Insets left="10.0" right="10.0" top="10.0" />
                </VBox.margin>
-            </HBox>
-            <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            </GridPane>
+            <TextArea fx:id="logTextArea" prefHeight="331.0" prefWidth="1004.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </VBox.margin>
