@@ -95,7 +95,7 @@ public class FXMLController implements Initializable {
     @FXML
     Slider speedSlider;
     short speed = 0;
- 
+
     @FXML
     Slider batteryPowerSlider;
     short batteryPower = 0;
@@ -115,7 +115,7 @@ public class FXMLController implements Initializable {
     @FXML
     Slider remainingBoostSlider;
     byte remainingBoost = 20;
-    
+
     @FXML
     TextArea logTextArea;
 
@@ -344,6 +344,12 @@ public class FXMLController implements Initializable {
                                 androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{2});
                             }
                             break;
+                        case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
+                            logger.log(Level.INFO, "Release drivetrain");
+                            break;
+                        case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
+                            logger.log(Level.INFO, "Disable drivetrain");
+                            break;
                         default:
                             logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
                     }
@@ -373,11 +379,11 @@ public class FXMLController implements Initializable {
                     buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
                     buffer.putShort((short) totalDistance);
                     buffer.put((byte) remainingBoost);
-                    
+
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
-                    
+
                     Integer interval = (Integer) sendIntervalComboBox.getSelectionModel().getSelectedItem();
-                    
+
                     if (interval == null) {
                         interval = (Integer) sendIntervalComboBox.getItems().get(1);
                         Platform.runLater(new Runnable() {
@@ -387,13 +393,13 @@ public class FXMLController implements Initializable {
                             }
                         });
                     }
-                    
+
                     Thread.sleep(interval);
                 } catch (InterruptedException e) {
                     logger.log(Level.INFO, "Driving mode thread is interrupted.");
                     break;
                 }
-           }
+            }
         }
     }
 }
