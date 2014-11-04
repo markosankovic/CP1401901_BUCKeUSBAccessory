@@ -49,7 +49,7 @@ public class FXMLController implements Initializable {
     static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
     static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
 
-    byte states = 0x00;
+    byte states = 0x21;
 
     Thread readThread;
     Thread stateMessageThread;
