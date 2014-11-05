@@ -3,9 +3,9 @@ package com.synapticon.buckeusbaccessory;
 public class VehicleState {
     
     private String label;
-    private int value;
+    private byte value;
 
-    public VehicleState(String label, int value) {
+    public VehicleState(String label, byte value) {
         this.label = label;
         this.value = value;
     }
@@ -27,14 +27,14 @@ public class VehicleState {
     /**
      * @return the value
      */
-    public int getValue() {
+    public byte getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(int value) {
+    public void setValue(byte value) {
         this.value = value;
     }
     

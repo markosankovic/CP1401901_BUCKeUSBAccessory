@@ -133,12 +133,12 @@ public class FXMLController implements Initializable {
 
         // Vehicle State
         ObservableList<VehicleState> vehicleStateObservableList = FXCollections.observableArrayList();
-        vehicleStateObservableList.add(new VehicleState("Standby (No drive release)", 0));
-        vehicleStateObservableList.add(new VehicleState("Standstill", 1));
-        vehicleStateObservableList.add(new VehicleState("Recuperation", 2));
-        vehicleStateObservableList.add(new VehicleState("Sailing", 3));
-        vehicleStateObservableList.add(new VehicleState("Driving", 4));
-        vehicleStateObservableList.add(new VehicleState("Boost", 5));
+        vehicleStateObservableList.add(new VehicleState("Standby (No drive release)", (byte) 0x00));
+        vehicleStateObservableList.add(new VehicleState("Standstill", (byte) 0x01));
+        vehicleStateObservableList.add(new VehicleState("Recuperation", (byte) 0x02));
+        vehicleStateObservableList.add(new VehicleState("Sailing", (byte) 0x03));
+        vehicleStateObservableList.add(new VehicleState("Driving", (byte) 0x04));
+        vehicleStateObservableList.add(new VehicleState("Boost", (byte) 0x05));
         vehicleStateChoiceBox.setItems(vehicleStateObservableList);
         vehicleStateChoiceBox.getSelectionModel().select(0);
 
@@ -395,9 +395,12 @@ public class FXMLController implements Initializable {
         public void run() {
             while (true) {
                 try {
-                    ByteBuffer buffer = ByteBuffer.allocate(10);
+                    VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
+
+                    ByteBuffer buffer = ByteBuffer.allocate(11);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
-                    buffer.put(states);
+                    buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
+                    buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
                     buffer.putShort(speed); // SPEED
                     buffer.putShort(batteryPower); // BATTERY_POWER
                     buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
