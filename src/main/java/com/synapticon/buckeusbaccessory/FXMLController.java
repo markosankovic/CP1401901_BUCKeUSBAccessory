@@ -130,6 +130,7 @@ public class FXMLController implements Initializable {
 
         // Send Interval
         sendIntervalChoiceBox.setItems(FXCollections.observableArrayList(5, 10, 15, 20, 50, 100, 200, 500, 1000, 3000));
+        sendIntervalChoiceBox.getSelectionModel().selectFirst();
 
         // Vehicle State
         ObservableList<VehicleState> vehicleStateObservableList = FXCollections.observableArrayList();
@@ -359,21 +360,9 @@ public class FXMLController implements Initializable {
                             break;
                         case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
                             logger.log(Level.INFO, "Release drivetrain");
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    vehicleStateChoiceBox.getSelectionModel().select(1);
-                                }
-                            });
                             break;
                         case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
                             logger.log(Level.INFO, "Disable drivetrain");
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    vehicleStateChoiceBox.getSelectionModel().select(0);
-                                }
-                            });
                             break;
                         default:
                             logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
@@ -395,11 +384,11 @@ public class FXMLController implements Initializable {
         public void run() {
             while (true) {
                 try {
-                    VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
-
+                    // Prepare data for the smartphone
                     ByteBuffer buffer = ByteBuffer.allocate(11);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
+                    VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
                     buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
                     buffer.putShort(speed); // SPEED
                     buffer.putShort(batteryPower); // BATTERY_POWER
@@ -408,20 +397,11 @@ public class FXMLController implements Initializable {
                     buffer.putShort((short) totalDistance);
                     buffer.put((byte) remainingBoost);
 
+                    // Send data
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
 
+                    // In the specified interval
                     Integer interval = (Integer) sendIntervalChoiceBox.getSelectionModel().getSelectedItem();
-
-                    if (interval == null) {
-                        interval = (Integer) sendIntervalChoiceBox.getItems().get(1);
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                sendIntervalChoiceBox.setValue(sendIntervalChoiceBox.getItems().get(1));
-                            }
-                        });
-                    }
-
                     Thread.sleep(interval);
                 } catch (InterruptedException e) {
                     logger.log(Level.INFO, "Driving mode thread is interrupted.");
