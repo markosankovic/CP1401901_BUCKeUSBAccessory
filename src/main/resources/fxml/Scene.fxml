@@ -25,10 +25,14 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
                   <Button fx:id="switchToUSBAccessoryModeButton" mnemonicParsing="false" onAction="#onSwitchToUSBAccessoryMode" text="Switch to USB accessory mode" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
+                  <Label text="Code:" />
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
+                  <Label text="Send interval:" />
                   <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
                   <Label text="ms" />
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="25.0" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                   <Label text="Vehicle state:" />
                   <ChoiceBox fx:id="vehicleStateChoiceBox" prefWidth="150.0" />
               </items>
