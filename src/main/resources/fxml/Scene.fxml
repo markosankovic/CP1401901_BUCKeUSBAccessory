@@ -26,8 +26,11 @@
               <items>
                   <Button fx:id="switchToUSBAccessoryModeButton" mnemonicParsing="false" onAction="#onSwitchToUSBAccessoryMode" text="Switch to USB accessory mode" />
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
-                  <ComboBox fx:id="sendIntervalComboBox" prefWidth="150.0" promptText="Send Interval" />
+                  <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
                   <Label text="ms" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="25.0" />
+                  <Label text="Vehicle state:" />
+                  <ChoiceBox fx:id="vehicleStateChoiceBox" prefWidth="150.0" />
               </items>
             </ToolBar>
             <ToolBar prefHeight="40.0" prefWidth="200.0">

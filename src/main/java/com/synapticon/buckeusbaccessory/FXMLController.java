@@ -18,7 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -85,12 +85,15 @@ public class FXMLController implements Initializable {
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
-        logger.log(Level.INFO, "Code text changed: " + codeTextField.getText());
+        logger.log(Level.INFO, "Code text changed: {0}", codeTextField.getText());
         code = codeTextField.getText();
     }
 
     @FXML
-    ComboBox sendIntervalComboBox;
+    ChoiceBox sendIntervalChoiceBox;
+
+    @FXML
+    ChoiceBox vehicleStateChoiceBox;
 
     @FXML
     Slider speedSlider;
@@ -126,8 +129,18 @@ public class FXMLController implements Initializable {
         code = codeTextField.getText();
 
         // Send Interval
-        ObservableList<Integer> intervals = FXCollections.observableArrayList(5, 10, 15, 20, 50, 100, 200, 500, 1000, 3000);
-        sendIntervalComboBox.setItems(intervals);
+        sendIntervalChoiceBox.setItems(FXCollections.observableArrayList(5, 10, 15, 20, 50, 100, 200, 500, 1000, 3000));
+
+        // Vehicle State
+        ObservableList<VehicleState> vehicleStateObservableList = FXCollections.observableArrayList();
+        vehicleStateObservableList.add(new VehicleState("Standby (No drive release)", 0));
+        vehicleStateObservableList.add(new VehicleState("Standstill", 1));
+        vehicleStateObservableList.add(new VehicleState("Recuperation", 2));
+        vehicleStateObservableList.add(new VehicleState("Sailing", 3));
+        vehicleStateObservableList.add(new VehicleState("Driving", 4));
+        vehicleStateObservableList.add(new VehicleState("Boost", 5));
+        vehicleStateChoiceBox.setItems(vehicleStateObservableList);
+        vehicleStateChoiceBox.getSelectionModel().select(0);
 
         // Speed Slider
         speedSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -346,9 +359,21 @@ public class FXMLController implements Initializable {
                             break;
                         case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
                             logger.log(Level.INFO, "Release drivetrain");
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    vehicleStateChoiceBox.getSelectionModel().select(1);
+                                }
+                            });
                             break;
                         case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
                             logger.log(Level.INFO, "Disable drivetrain");
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    vehicleStateChoiceBox.getSelectionModel().select(0);
+                                }
+                            });
                             break;
                         default:
                             logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
@@ -382,14 +407,14 @@ public class FXMLController implements Initializable {
 
                     androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
 
-                    Integer interval = (Integer) sendIntervalComboBox.getSelectionModel().getSelectedItem();
+                    Integer interval = (Integer) sendIntervalChoiceBox.getSelectionModel().getSelectedItem();
 
                     if (interval == null) {
-                        interval = (Integer) sendIntervalComboBox.getItems().get(1);
+                        interval = (Integer) sendIntervalChoiceBox.getItems().get(1);
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                sendIntervalComboBox.setValue(sendIntervalComboBox.getItems().get(1));
+                                sendIntervalChoiceBox.setValue(sendIntervalChoiceBox.getItems().get(1));
                             }
                         });
                     }
