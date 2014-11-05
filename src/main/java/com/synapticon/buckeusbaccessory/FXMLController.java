@@ -17,11 +17,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javax.usb.UsbException;
 import javax.usb.event.UsbDeviceDataEvent;
@@ -78,6 +83,15 @@ public class FXMLController implements Initializable {
         public void dataEventOccurred(UsbDeviceDataEvent udde) {
         }
     };
+
+    @FXML
+    AnchorPane anchorPane;
+
+    @FXML
+    HBox frontLightsHBox;
+
+    @FXML
+    HBox rearLightsHBox;
 
     @FXML
     TextField codeTextField;
@@ -234,6 +248,29 @@ public class FXMLController implements Initializable {
             public void close() throws SecurityException {
             }
         });
+
+        drawLEDs();
+    }
+
+    void drawLEDs() {
+        for (int i = 0; i < 22; i++) {
+            Rectangle rect = new Rectangle(10.0, 10.0, Color.TRANSPARENT);
+            rect.setStroke(Color.LIGHTGRAY);
+            frontLightsHBox.getChildren().add(rect);
+        }
+
+        for (int i = 0; i < 53; i++) {
+            Rectangle rect = new Rectangle(10.0, 10.0, Color.TRANSPARENT);
+            rect.setStroke(Color.LIGHTGRAY);
+            rearLightsHBox.getChildren().add(rect);
+        }
+    }
+
+    void updateLEDsColor(byte[] buffer) {
+        for (Node node : frontLightsHBox.getChildren()) {
+            Rectangle rect = (Rectangle) node;
+            rect.setFill(Color.rgb(238, 130, 238));
+        }
     }
 
     @FXML
