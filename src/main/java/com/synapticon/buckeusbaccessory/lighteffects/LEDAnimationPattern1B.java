@@ -16,8 +16,8 @@ public class LEDAnimationPattern1B extends LEDAnimation {
     private int brakePosition;
     private boolean brakeDirection;
 
-    public LEDAnimationPattern1B(int duration, LEDUpdater ledUpdater) {
-        super(ledUpdater, duration, 500, 100);
+    public LEDAnimationPattern1B(LEDUpdater ledUpdater, int duration) {
+        super(ledUpdater, duration, 1000, 200);
     }
 
     @Override

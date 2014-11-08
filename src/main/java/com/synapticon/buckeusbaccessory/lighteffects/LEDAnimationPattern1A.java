@@ -11,7 +11,7 @@ public class LEDAnimationPattern1A extends LEDAnimation {
     private boolean flashFrontLED = true;
     private boolean flashRearLED = true;
 
-    public LEDAnimationPattern1A(int duration, LEDUpdater ledUpdater) {
+    public LEDAnimationPattern1A(LEDUpdater ledUpdater, int duration) {
         super(ledUpdater, duration, 1000, 1000);
     }
 
@@ -25,8 +25,8 @@ public class LEDAnimationPattern1A extends LEDAnimation {
                 bytes[i + 2] = (byte) 0;
             }
         }
-        setFrontLEDBytes(bytes);
         flashFrontLED = !flashFrontLED;
+        setFrontLEDBytes(bytes);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LEDAnimationPattern1A extends LEDAnimation {
                 bytes[i + 2] = (byte) 0;
             }
         }
-        setRearLEDBytes(bytes);
         flashRearLED = !flashRearLED;
+        setRearLEDBytes(bytes);
     }
 }
