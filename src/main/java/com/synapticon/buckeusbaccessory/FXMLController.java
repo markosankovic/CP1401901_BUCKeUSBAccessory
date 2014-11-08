@@ -1,5 +1,7 @@
 package com.synapticon.buckeusbaccessory;
 
+import com.synapticon.buckeusbaccessory.lighteffects.LEDEffectsPattern1;
+import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,12 +19,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.Bloom;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -34,7 +36,7 @@ import javax.usb.event.UsbDeviceErrorEvent;
 import javax.usb.event.UsbDeviceEvent;
 import javax.usb.event.UsbDeviceListener;
 
-public class FXMLController implements Initializable {
+public class FXMLController implements Initializable, LEDUpdater {
 
     static final Logger logger = Logger.getLogger(FXMLController.class.getName());
 
@@ -96,6 +98,7 @@ public class FXMLController implements Initializable {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
+    private LEDEffectsPattern1 ledEffectsPattern1;
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
@@ -250,26 +253,28 @@ public class FXMLController implements Initializable {
         });
 
         drawLEDs();
+
+        ledEffectsPattern1 = new LEDEffectsPattern1(this);
+        ledEffectsPattern1.start();
     }
 
     void drawLEDs() {
+
+        Bloom bloom = new Bloom();
+        bloom.setThreshold(0.1);
+
         for (int i = 0; i < 22; i++) {
-            Rectangle rect = new Rectangle(10.0, 10.0, Color.TRANSPARENT);
-            rect.setStroke(Color.LIGHTGRAY);
+            Rectangle rect = new Rectangle(12.0, 12.0, Color.TRANSPARENT);
+            rect.setStroke(Color.rgb(47, 47, 47));
+            rect.setEffect(bloom);
             frontLightsHBox.getChildren().add(rect);
         }
 
         for (int i = 0; i < 53; i++) {
-            Rectangle rect = new Rectangle(10.0, 10.0, Color.TRANSPARENT);
-            rect.setStroke(Color.LIGHTGRAY);
+            Rectangle rect = new Rectangle(12.0, 12.0, Color.TRANSPARENT);
+            rect.setStroke(Color.rgb(47, 47, 47));
+            rect.setEffect(bloom);
             rearLightsHBox.getChildren().add(rect);
-        }
-    }
-
-    void updateLEDsColor(byte[] buffer) {
-        for (Node node : frontLightsHBox.getChildren()) {
-            Rectangle rect = (Rectangle) node;
-            rect.setFill(Color.rgb(238, 130, 238));
         }
     }
 
@@ -281,6 +286,7 @@ public class FXMLController implements Initializable {
         logger.log(Level.INFO, "Handle Close");
         Stage stage = (Stage) switchToUSBAccessoryModeButton.getScene().getWindow();
         closeAndroidDevice();
+        ledEffectsPattern1.stop();
         stage.close();
     }
 
@@ -357,6 +363,41 @@ public class FXMLController implements Initializable {
             logger.log(Level.INFO, "Connected to USB device");
         } catch (UsbException ex) {
             logger.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void updateLED(byte[] bytes) {
+
+        byte[] frontBytes = Arrays.copyOfRange(bytes, 0, 66);
+        byte[] rearBytes = Arrays.copyOfRange(bytes, 66, 225);
+
+        for (int i = 0, j = 0; i < frontBytes.length && j < frontLightsHBox.getChildren().size(); i += 3, j++) {
+            int r = frontBytes[i] & 0xFF;
+            int g = frontBytes[i + 1] & 0xFF;
+            int b = frontBytes[i + 2] & 0xFF;
+            final Color color = Color.rgb(r, g, b);
+            final Rectangle rect = (Rectangle) frontLightsHBox.getChildren().get(j);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    rect.setFill(color);
+                }
+            });
+        }
+
+        for (int i = 0, j = 0; i < rearBytes.length && j < rearLightsHBox.getChildren().size(); i += 3, j++) {
+            int r = rearBytes[i] & 0xFF;
+            int g = rearBytes[i + 1] & 0xFF;
+            int b = rearBytes[i + 2] & 0xFF;
+            final Color color = Color.rgb(r, g, b);
+            final Rectangle rect = (Rectangle) rearLightsHBox.getChildren().get(j);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    rect.setFill(color);
+                }
+            });
         }
     }
 
