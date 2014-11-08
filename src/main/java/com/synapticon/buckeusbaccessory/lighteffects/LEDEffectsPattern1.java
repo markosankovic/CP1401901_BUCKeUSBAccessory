@@ -6,7 +6,11 @@ public class LEDEffectsPattern1 {
 
     public LEDEffectsPattern1(LEDUpdater ledUpdater) {
         LEDAnimation animation1 = new LEDAnimationPattern1A(4000, ledUpdater);
-        animation1.setNext(animation1);
+        LEDAnimation animation2 = new LEDAnimationPattern1B(6000, ledUpdater);
+
+        animation1.setNext(animation2);
+        animation2.setNext(animation1);
+
         firstLEDAnimation = animation1;
     }
 

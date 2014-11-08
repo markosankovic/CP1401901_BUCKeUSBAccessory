@@ -5,19 +5,11 @@ package com.synapticon.buckeusbaccessory.lighteffects;
  *
  * Back: All LEDs flash slow, 1 time per second; Front: All LEDs flash slow, 1
  * time per second; last 4s.
- *
- * <ul>
- * <li>17 LEDs turning light left: RGB(255,204,0)</li>
- * <li>19 LEDs rear light: RGB(225,17,22)</li>
- * <li>17 LEDs turning light right: RGB(255,204,0)</li>
- * <li>11 LEDs turning light right: RGB(255,204,0)</li>
- * <li>11 LEDs turning light left: RGB(255,204,0)</li>
- * </ul>
  */
 public class LEDAnimationPattern1A extends LEDAnimation {
 
-    private boolean flashFrontLED;
-    private boolean flashRearLED;
+    private boolean flashFrontLED = true;
+    private boolean flashRearLED = true;
 
     public LEDAnimationPattern1A(int duration, LEDUpdater ledUpdater) {
         super(ledUpdater, duration, 1000, 1000);
