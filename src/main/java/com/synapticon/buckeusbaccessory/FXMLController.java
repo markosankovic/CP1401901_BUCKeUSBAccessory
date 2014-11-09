@@ -286,7 +286,9 @@ public class FXMLController implements Initializable, LEDUpdater {
         logger.log(Level.INFO, "Handle Close");
         Stage stage = (Stage) switchToUSBAccessoryModeButton.getScene().getWindow();
         closeAndroidDevice();
-        ledEffectsPattern1.stop();
+        if (ledEffectsPattern1 != null) {
+            ledEffectsPattern1.stop();
+        }
         stage.close();
     }
 
@@ -441,6 +443,10 @@ public class FXMLController implements Initializable, LEDUpdater {
                             break;
                         case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
                             logger.log(Level.INFO, "Disable drivetrain");
+                            break;
+                        case OnBoardControllerConstants.LED_UPDATE_COMMAND:
+                            byte[] bytes = Arrays.copyOfRange(data, 2, received);
+                            updateLED(bytes);
                             break;
                         default:
                             logger.log(Level.WARNING, String.format("No such command: %d", data[0]));

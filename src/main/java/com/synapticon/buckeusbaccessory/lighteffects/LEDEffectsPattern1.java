@@ -8,10 +8,12 @@ public class LEDEffectsPattern1 {
         LEDAnimation animation1 = new LEDAnimationPattern1A(ledUpdater, 4000);
         LEDAnimation animation2 = new LEDAnimationPattern1B(ledUpdater, 6000);
         LEDAnimation animation3 = new LEDAnimationPattern1C(ledUpdater, 5000);
+        LEDAnimation animation4 = new LEDAnimationPattern1D(ledUpdater, 5000);
 
         animation1.setNext(animation2);
         animation2.setNext(animation3);
-        animation3.setNext(animation1);
+        animation3.setNext(animation4);
+        animation4.setNext(animation1);
 
         firstLEDAnimation = animation1;
     }

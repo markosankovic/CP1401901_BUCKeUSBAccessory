@@ -13,7 +13,7 @@ public class OnBoardControllerConstants {
     public static final short VERIFY_CODE_COMMAND = 0x42;
     public static final short RELEASE_DRIVETRAIN_COMMAND = 0x43;
     public static final short DISABLE_DRIVETRAIN_COMMAND = 0x44;
-
+    public static final short LED_UPDATE_COMMAND = 0x45;
 
     // Messages
 
