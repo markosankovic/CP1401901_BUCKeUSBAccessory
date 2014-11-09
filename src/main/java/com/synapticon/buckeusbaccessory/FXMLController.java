@@ -1,7 +1,8 @@
 package com.synapticon.buckeusbaccessory;
 
-import com.synapticon.buckeusbaccessory.lighteffects.LEDEffectsPattern1;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern1;
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern2;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -98,7 +99,7 @@ public class FXMLController implements Initializable, LEDUpdater {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
-    private LEDEffectsPattern1 ledEffectsPattern1;
+    private LightEffectPattern1 lightEffectPattern;
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
@@ -254,8 +255,8 @@ public class FXMLController implements Initializable, LEDUpdater {
 
         drawLEDs();
 
-        ledEffectsPattern1 = new LEDEffectsPattern1(this);
-        ledEffectsPattern1.start();
+        lightEffectPattern = new LightEffectPattern1(this);
+        lightEffectPattern.start();
     }
 
     void drawLEDs() {
@@ -286,8 +287,8 @@ public class FXMLController implements Initializable, LEDUpdater {
         logger.log(Level.INFO, "Handle Close");
         Stage stage = (Stage) switchToUSBAccessoryModeButton.getScene().getWindow();
         closeAndroidDevice();
-        if (ledEffectsPattern1 != null) {
-            ledEffectsPattern1.stop();
+        if (lightEffectPattern != null) {
+            lightEffectPattern.stop();
         }
         stage.close();
     }

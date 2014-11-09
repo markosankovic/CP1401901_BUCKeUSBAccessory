@@ -1,14 +1,14 @@
 package com.synapticon.buckeusbaccessory.lighteffects;
 
-public class LEDEffectsPattern1 {
+public class LightEffectPattern2 {
 
     LEDAnimation firstLEDAnimation;
 
-    public LEDEffectsPattern1(LEDUpdater ledUpdater) {
-        LEDAnimation animation1 = new LEDAnimationPattern1A(ledUpdater, 4000);
-        LEDAnimation animation2 = new LEDAnimationPattern1B(ledUpdater, 6000);
-        LEDAnimation animation3 = new LEDAnimationPattern1C(ledUpdater, 5000);
-        LEDAnimation animation4 = new LEDAnimationPattern1D(ledUpdater, 5000);
+    public LightEffectPattern2(LEDUpdater ledUpdater) {
+        LEDAnimation animation1 = new LEDAnimationPattern2A(ledUpdater, 5000);
+        LEDAnimation animation2 = new LEDAnimationPattern2B(ledUpdater, 4000);
+        LEDAnimation animation3 = new LEDAnimationPattern2C(ledUpdater, 6000);
+        LEDAnimation animation4 = new LEDAnimationPattern2D(ledUpdater, 5000);
 
         animation1.setNext(animation2);
         animation2.setNext(animation3);
