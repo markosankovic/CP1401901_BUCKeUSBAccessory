@@ -11,7 +11,7 @@ import java.util.Random;
 public class LEDAnimationPattern1C extends LEDAnimation {
 
     private final Random random;
-    
+
     private boolean flashFrontLED;
 
     private byte[] rearBytes;

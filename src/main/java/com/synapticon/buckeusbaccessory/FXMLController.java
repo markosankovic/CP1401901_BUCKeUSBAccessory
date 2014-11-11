@@ -99,7 +99,7 @@ public class FXMLController implements Initializable, LEDUpdater {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
-    private LightEffectPattern1 lightEffectPattern;
+    private LightEffectPattern2 lightEffectPattern;
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
@@ -255,7 +255,7 @@ public class FXMLController implements Initializable, LEDUpdater {
 
         drawLEDs();
 
-        lightEffectPattern = new LightEffectPattern1(this);
+        lightEffectPattern = new LightEffectPattern2(this);
         lightEffectPattern.start();
     }
 

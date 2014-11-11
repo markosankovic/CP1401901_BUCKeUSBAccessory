@@ -10,7 +10,7 @@ public class LightEffectPattern2 {
         LEDAnimation animation3 = new LEDAnimationPattern2C(ledUpdater, 6000);
         LEDAnimation animation4 = new LEDAnimationPattern2D(ledUpdater, 5000);
 
-        animation1.setNext(animation2);
+        animation1.setNext(animation1);
         animation2.setNext(animation3);
         animation3.setNext(animation4);
         animation4.setNext(animation1);
