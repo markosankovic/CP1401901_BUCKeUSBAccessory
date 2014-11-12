@@ -1,6 +1,8 @@
 package com.synapticon.buckeusbaccessory;
 
+import static com.synapticon.buckeusbaccessory.FXMLController.logger;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class Utils {
 
@@ -54,4 +56,6 @@ public class Utils {
         System.arraycopy(a, 0, combined, 2, a.length);
         return combined;
     }
+
+
 }

@@ -13,21 +13,12 @@
     <children>
       <VBox prefHeight="576.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
             <ToolBar prefHeight="40.0">
               <items>
-                  <Button fx:id="switchToUSBAccessoryModeButton" mnemonicParsing="false" onAction="#onSwitchToUSBAccessoryMode" text="Switch to USB accessory mode" />
+                  <Button fx:id="openSerialPortButton" mnemonicParsing="false" onAction="#handleOpenSerialPortButtonAction" text="Open Serial Port" />
                   <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                   <Label text="Code:" />
-                  <TextField fx:id="codeTextField" onAction="#handleCodeTextChanged" promptText="to verify against" text="qwerty" />
+                  <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" promptText="to verify against" text="qwerty" />
                   <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                   <Label text="Send interval:" />
                   <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
@@ -44,12 +35,12 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <ToggleButton mnemonicParsing="false" onAction="#onSmartphoneConnected" selected="true" text="SMARTPHONE CONNECTED" />
-                  <ToggleButton mnemonicParsing="false" onAction="#onHeadlightToggle" text="HEADLIGHT" />
-                  <ToggleButton mnemonicParsing="false" onAction="#onCameraToggle" text="CAMERA" />
-                  <ToggleButton mnemonicParsing="false" onAction="#onLeftTurnSignalToggle" text="LEFT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#onRightTurnSignalToggle" text="RIGHT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#onGasThrottleIdleStateToggle" selected="true" text="GAS THROTTLE IDLE STATE" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleSmartphoneConnectedToggleButtonAction" selected="true" text="SMARTPHONE CONNECTED" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleHeadlightToggleButtonAction" text="HEADLIGHT" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleCameraToggleButtonAction" text="CAMERA" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggleButtonAction" text="LEFT TURN SIGNAL" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggleButtonAction" text="RIGHT TURN SIGNAL" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleGasThrottleIdleStateToggleButtonAction" selected="true" text="GAS THROTTLE IDLE STATE" />
                </items>
             </ToolBar>
             <GridPane hgap="10.0" prefHeight="120.0">

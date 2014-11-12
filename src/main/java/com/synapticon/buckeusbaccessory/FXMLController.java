@@ -1,10 +1,7 @@
 package com.synapticon.buckeusbaccessory;
 
-import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern1;
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Handler;
@@ -17,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -29,62 +27,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javax.usb.UsbException;
-import javax.usb.event.UsbDeviceDataEvent;
-import javax.usb.event.UsbDeviceErrorEvent;
-import javax.usb.event.UsbDeviceEvent;
-import javax.usb.event.UsbDeviceListener;
+import javafx.stage.WindowEvent;
 
 public class FXMLController implements Initializable, LEDUpdater {
 
     static final Logger logger = Logger.getLogger(FXMLController.class.getName());
 
-    AndroidDevice androidDevice;
-
-    IdentifyingInformation identifyingInformation = new IdentifyingInformation(
-            "Synapticon",
-            "BUCKe USB Accessory",
-            "JavaFX application that simulates the On-Board Controller",
-            "0.0.1",
-            "http://bucke.synapticon.com/",
-            "0");
-
-    static final short DEVICE_VENDOR_ID = (short) 0x0bb4; // HTC Corporation
-    static final short DEVICE_PRODUCT_ID = (short) 0x0f63; // HTC One mini
-
-    static final short ACCESSORY_VENDOR_ID = (short) 0x18D1;
-    static final short ACCESSORY_PRODUCT_ID = (short) 0x2D01;
-
     byte states = 0x21;
-
-    Thread readThread;
-    Thread stateMessageThread;
-
-    UsbDeviceListener usbDeviceListener = new UsbDeviceListener() {
-        @Override
-        public void usbDeviceDetached(UsbDeviceEvent ude) {
-            logger.log(Level.INFO, "USB device is detached");
-
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    switchToUSBAccessoryModeButton.setDisable(false);
-                }
-            });
-
-            FXMLController.this.androidDevice = null;
-        }
-
-        @Override
-        public void errorEventOccurred(UsbDeviceErrorEvent udee) {
-            logger.log(Level.INFO, udee.getUsbException().getMessage());
-        }
-
-        @Override
-        public void dataEventOccurred(UsbDeviceDataEvent udde) {
-        }
-    };
 
     @FXML
     AnchorPane anchorPane;
@@ -98,10 +47,9 @@ public class FXMLController implements Initializable, LEDUpdater {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
-    private LightEffectPattern1 lightEffectPattern;
 
     @FXML
-    void handleCodeTextChanged(ActionEvent event) {
+    void handleCodeTextFieldAction(ActionEvent event) {
         logger.log(Level.INFO, "Code text changed: {0}", codeTextField.getText());
         code = codeTextField.getText();
     }
@@ -141,6 +89,19 @@ public class FXMLController implements Initializable, LEDUpdater {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        // Clean the resources on window close
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                anchorPane.getScene().getWindow().setOnCloseRequest(new EventHandler<WindowEvent>() {
+                    @Override
+                    public void handle(WindowEvent event) {
+                        FXMLController.this.onClose();
+                    }
+                });
+            }
+        });
 
         // Set initial code
         code = codeTextField.getText();
@@ -253,9 +214,6 @@ public class FXMLController implements Initializable, LEDUpdater {
         });
 
         drawLEDs();
-
-        // lightEffectPattern = new LightEffectPattern1(this);
-        // lightEffectPattern.start();
     }
 
     void drawLEDs() {
@@ -278,92 +236,56 @@ public class FXMLController implements Initializable, LEDUpdater {
         }
     }
 
-    @FXML
-    Button switchToUSBAccessoryModeButton;
-
-    @FXML
-    void onClose() {
-        logger.log(Level.INFO, "Handle Close");
-        Stage stage = (Stage) switchToUSBAccessoryModeButton.getScene().getWindow();
-        closeAndroidDevice();
-        if (lightEffectPattern != null) {
-            lightEffectPattern.stop();
-        }
-        stage.close();
-    }
-
-    void closeAndroidDevice() {
-        if (androidDevice != null) {
-            try {
-                androidDevice.sendMessage(OnBoardControllerConstants.SOFT_CLOSE_MESSAGE, new byte[]{});
-                androidDevice.close();
-            } catch (UsbException ex) {
-                logger.log(Level.SEVERE, null, ex);
-            }
-        }
+    public void onClose() {
+        logger.log(Level.INFO, "On close");
     }
 
     @FXML
-    void onSmartphoneConnected(ActionEvent event) {
+    Button openSerialPortButton;
+
+    @FXML
+    void handleOpenSerialPortButtonAction(ActionEvent event) {
+        logger.log(Level.INFO, "Open serial port action");
+    }
+
+    @FXML
+    void handleSmartphoneConnectedToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x01);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
     @FXML
-    void onHeadlightToggle(ActionEvent event) {
+    void handleHeadlightToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x02);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
     @FXML
-    void onCameraToggle(ActionEvent event) {
+    void handleCameraToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x04);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
     @FXML
-    void onLeftTurnSignalToggle(ActionEvent event) {
+    void handleLeftTurnSignalToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x08);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
     @FXML
-    void onRightTurnSignalToggle(ActionEvent event) {
+    void handleRightTurnSignalToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x10);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
     @FXML
-    void onGasThrottleIdleStateToggle(ActionEvent event) {
+    void handleGasThrottleIdleStateToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x20);
-        logger.log(Level.INFO, String.format("States: %d", states));
+        logFlags(states);
     }
 
-    @FXML
-    void onSwitchToUSBAccessoryMode() {
-        try {
-            // Get Android device (switch Android device to USB accessory mode)
-            AndroidOpenAccessory androidOpenAccessory = new AndroidOpenAccessory(identifyingInformation, DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID);
-            androidDevice = new AndroidDevice(androidOpenAccessory.switchDevice());
-
-            // Add USB device listener
-            androidDevice.getUsbDevice().addUsbDeviceListener(usbDeviceListener);
-
-            // Start new reading thread
-            readThread = new Thread(new ReadRunnable());
-            readThread.start();
-
-            // Start new state message thread
-            stateMessageThread = new Thread(new StateMessageRunnable());
-            stateMessageThread.start();
-
-            // Disable connect button
-            switchToUSBAccessoryModeButton.setDisable(true);
-
-            logger.log(Level.INFO, "Connected to USB device");
-        } catch (UsbException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
+    void logFlags(byte flags) {
+        logger.log(Level.INFO, String.format("%8s", Integer.toBinaryString(flags & 0xFF)).replace(' ', '0'));
     }
 
     @Override
@@ -398,98 +320,6 @@ public class FXMLController implements Initializable, LEDUpdater {
                     rect.setFill(color);
                 }
             });
-        }
-    }
-
-    class ReadRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    byte[] data = new byte[16384];
-                    int received = androidDevice.getReadPipe().syncSubmit(data);
-                    // logger.log(Level.INFO, String.format("Bytes received: %d", received));
-
-                    short command = Utils.twoBytesToShort(data[0], data[1]);
-
-                    switch (command) {
-                        case OnBoardControllerConstants.SOFT_CLOSE_COMMAND:
-                            logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
-                            androidDevice.sendMessage(OnBoardControllerConstants.SOFT_CLOSE_MESSAGE, new byte[]{});
-                            break;
-                        case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
-                            if (received > 2) {
-                                byte[] codeBytes = Arrays.copyOfRange(data, 2, received);
-                                String verificationCode = new String(codeBytes);
-                                logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
-                                Thread.sleep(500);
-                                if (code.equals(verificationCode)) {
-                                    logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
-                                    androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{0});
-                                } else {
-                                    logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
-                                    androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{1});
-                                }
-                            } else {
-                                logger.log(Level.WARNING, "Code is empty.");
-                                androidDevice.sendMessage(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{2});
-                            }
-                            break;
-                        case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
-                            logger.log(Level.INFO, "Release drivetrain");
-                            break;
-                        case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
-                            logger.log(Level.INFO, "Disable drivetrain");
-                            break;
-                        case OnBoardControllerConstants.LED_UPDATE_COMMAND:
-                            byte[] bytes = Arrays.copyOfRange(data, 2, received);
-                            updateLED(bytes);
-                            break;
-                        default:
-                            logger.log(Level.WARNING, String.format("No such command: %d", data[0]));
-                    }
-
-                } catch (UsbException ex) {
-                    logger.log(Level.WARNING, ex.getMessage());
-                    break;
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
-    class StateMessageRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    // Prepare data for the smartphone
-                    ByteBuffer buffer = ByteBuffer.allocate(11);
-                    buffer.order(ByteOrder.LITTLE_ENDIAN);
-                    buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
-                    VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
-                    buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
-                    buffer.putShort(speed); // SPEED
-                    buffer.putShort(batteryPower); // BATTERY_POWER
-                    buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
-                    buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
-                    buffer.putShort((short) totalDistance);
-                    buffer.put((byte) remainingBoost);
-
-                    // Send data
-                    androidDevice.sendMessage(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array());
-
-                    // In the specified interval
-                    Integer interval = (Integer) sendIntervalChoiceBox.getSelectionModel().getSelectedItem();
-                    Thread.sleep(interval);
-                } catch (InterruptedException e) {
-                    logger.log(Level.INFO, "Driving mode thread is interrupted.");
-                    break;
-                }
-            }
         }
     }
 }
