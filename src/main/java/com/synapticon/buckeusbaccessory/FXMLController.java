@@ -64,7 +64,7 @@ public class FXMLController implements Initializable, LEDUpdater {
 
     @FXML
     void handleCodeTextFieldAction(ActionEvent event) {
-        logger.log(Level.INFO, "Code text changed: {0}", codeTextField.getText());
+        logger.log(Level.INFO, String.format("Code text changed: %s", codeTextField.getText()));
         code = codeTextField.getText();
     }
 
