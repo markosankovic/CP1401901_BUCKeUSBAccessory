@@ -368,23 +368,60 @@ public class FXMLController implements Initializable, LEDUpdater {
             // For example, if the data came a method event.getEventValue() returns us the number of bytes in the input buffer.
             if (event.isRXCHAR()) {
                 try {
-                    byte buffer[] = serialPort.readBytes(event.getEventValue());
-                    System.out.println(Arrays.toString(buffer));
-                } catch (SerialPortException ex) {
-                    System.out.println(ex);
+                    int numberOfBytes = event.getEventValue();
+                    byte buffer[] = serialPort.readBytes(numberOfBytes);
+                    short command = Utils.twoBytesToShort(buffer[0], buffer[1]);
+
+                    switch (command) {
+                        case OnBoardControllerConstants.SOFT_CLOSE_COMMAND:
+                            logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
+                            // TODO: Return OnBoardControllerConstants.SOFT_CLOSE_MESSAGE
+                            break;
+                        case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
+                            if (numberOfBytes > 2) {
+                                String verificationCode = String.valueOf(Arrays.copyOfRange(buffer, 2, numberOfBytes));
+                                logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
+                                Thread.sleep(500);
+                                if (code.equals(verificationCode)) {
+                                    logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
+                                    serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{0}));
+                                } else {
+                                    logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
+                                    serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{1}));
+                                }
+                            } else {
+                                logger.log(Level.WARNING, "Code is empty.");
+                                serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{2}));
+                            }
+                            break;
+                        case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
+                            logger.log(Level.INFO, "Release drivetrain");
+                            break;
+                        case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
+                            logger.log(Level.INFO, "Disable drivetrain");
+                            break;
+                        case OnBoardControllerConstants.LED_UPDATE_COMMAND:
+                            byte[] bytes = Arrays.copyOfRange(buffer, 2, numberOfBytes);
+                            updateLED(bytes);
+                            break;
+                        default:
+                            logger.log(Level.WARNING, String.format("No such command: %d", command));
+                    }
+                } catch (InterruptedException | SerialPortException ex) {
+                    logger.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             } //If the CTS line status has changed, then the method event.getEventValue() returns 1 if the line is ON and 0 if it is OFF.
             else if (event.isCTS()) {
                 if (event.getEventValue() == 1) {
-                    System.out.println("CTS - ON");
+                    logger.log(Level.INFO, "CTS - ON");
                 } else {
-                    System.out.println("CTS - OFF");
+                    logger.log(Level.INFO, "CTS - OFF");
                 }
             } else if (event.isDSR()) {
                 if (event.getEventValue() == 1) {
-                    System.out.println("DSR - ON");
+                    logger.log(Level.INFO, "DSR - ON");
                 } else {
-                    System.out.println("DSR - OFF");
+                    logger.log(Level.INFO, "DSR - OFF");
                 }
             }
         }
