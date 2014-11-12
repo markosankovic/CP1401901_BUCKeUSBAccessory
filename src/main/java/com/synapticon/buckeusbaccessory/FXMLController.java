@@ -2,6 +2,8 @@ package com.synapticon.buckeusbaccessory;
 
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Handler;
@@ -247,16 +249,7 @@ public class FXMLController implements Initializable, LEDUpdater {
         }
     }
 
-    public void onClose() {
-        logger.log(Level.INFO, "Close serial port");
-        if (serialPort != null && serialPort.isOpened()) {
-            try {
-                serialPort.closePort();
-            } catch (SerialPortException ex) {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
-            }
-        }
-    }
+    Thread stateMessageThread;
 
     @FXML
     Button openSerialPortButton;
@@ -279,9 +272,29 @@ public class FXMLController implements Initializable, LEDUpdater {
             // Add an interface through which we will receive information about events
             serialPort.addEventListener(new SerialPortReader());
 
+            // Start the state message thread
+            stateMessageThread = new Thread(new StateMessageRunnable());
+            stateMessageThread.start();
+
             openSerialPortButton.setDisable(true);
         } catch (SerialPortException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
+    public void onClose() {
+        logger.log(Level.INFO, "Interrupt state message thread");
+        if (stateMessageThread.isAlive()) {
+            stateMessageThread.interrupt();
+        }
+
+        logger.log(Level.INFO, "Close serial port");
+        if (serialPort != null && serialPort.isOpened()) {
+            try {
+                serialPort.closePort();
+            } catch (SerialPortException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
         }
     }
 
@@ -422,6 +435,46 @@ public class FXMLController implements Initializable, LEDUpdater {
                     logger.log(Level.INFO, "DSR - ON");
                 } else {
                     logger.log(Level.INFO, "DSR - OFF");
+                }
+            }
+        }
+    }
+
+    /**
+     * Sends the state message over the serial port.
+     */
+    class StateMessageRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    // Prepare data for the smartphone
+                    ByteBuffer buffer = ByteBuffer.allocate(11);
+                    buffer.order(ByteOrder.LITTLE_ENDIAN);
+                    buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
+                    VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
+                    buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
+                    buffer.putShort(speed); // SPEED
+                    buffer.putShort(batteryPower); // BATTERY_POWER
+                    buffer.put(batteryStateOfCharge); // BATTERY_STATE_OF_CHARGE
+                    buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
+                    buffer.putShort((short) totalDistance);
+                    buffer.put((byte) remainingBoost);
+
+                    // Send data over the serial port
+                    try {
+                        serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array()));
+                    } catch (SerialPortException ex) {
+                        logger.log(Level.SEVERE, ex.getMessage(), ex);
+                    }
+
+                    // Wait before for the specified interval before a new state message is sent
+                    Integer interval = (Integer) sendIntervalChoiceBox.getSelectionModel().getSelectedItem();
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    logger.log(Level.INFO, "Driving mode thread is interrupted.");
+                    break;
                 }
             }
         }
