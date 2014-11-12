@@ -33,7 +33,6 @@ public class LEDAnimationPattern2A extends LEDAnimation {
         bytes[35 + rightPosition] = (byte) 0;
 
         leftDirection = leftPosition == 30 || leftPosition == 0 ? !leftDirection : leftDirection;
-        System.out.println(leftDirection);
         leftPosition += leftDirection ? 3 : -3;
 
         rightDirection = rightPosition == 30 || rightPosition == 0 ? !rightDirection : rightDirection;

@@ -2,7 +2,6 @@ package com.synapticon.buckeusbaccessory;
 
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern1;
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
-import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern2;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -99,7 +98,7 @@ public class FXMLController implements Initializable, LEDUpdater {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
-    private LightEffectPattern2 lightEffectPattern;
+    private LightEffectPattern1 lightEffectPattern;
 
     @FXML
     void handleCodeTextChanged(ActionEvent event) {
@@ -255,8 +254,8 @@ public class FXMLController implements Initializable, LEDUpdater {
 
         drawLEDs();
 
-        lightEffectPattern = new LightEffectPattern2(this);
-        lightEffectPattern.start();
+        // lightEffectPattern = new LightEffectPattern1(this);
+        // lightEffectPattern.start();
     }
 
     void drawLEDs() {
@@ -344,13 +343,11 @@ public class FXMLController implements Initializable, LEDUpdater {
     void onSwitchToUSBAccessoryMode() {
         try {
             // Get Android device (switch Android device to USB accessory mode)
-            androidDevice = new AndroidDevice(new AndroidOpenAccessory(
-                    identifyingInformation,
-                    DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
-            );
+            AndroidOpenAccessory androidOpenAccessory = new AndroidOpenAccessory(identifyingInformation, DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID);
+            androidDevice = new AndroidDevice(androidOpenAccessory.switchDevice());
 
             // Add USB device listener
-            androidDevice.getDevice().addUsbDeviceListener(usbDeviceListener);
+            androidDevice.getUsbDevice().addUsbDeviceListener(usbDeviceListener);
 
             // Start new reading thread
             readThread = new Thread(new ReadRunnable());

@@ -11,9 +11,8 @@ import javax.usb.UsbPipe;
 
 public final class AndroidDevice {
 
-    AndroidOpenAccessory openAccessory;
-    private final UsbDevice device;
-
+    private final UsbDevice usbDevice;
+    
     UsbInterface iface;
     private final UsbPipe readPipe;
     private final UsbPipe writePipe;
@@ -21,17 +20,13 @@ public final class AndroidDevice {
     /**
      * AndroidDevice.
      *
-     * Switch device to USB Accessory Mode and open read and write pipes.
-     *
-     * @param openAccessory
+     * @param usbDevice 
      * @throws UsbException
      */
-    public AndroidDevice(AndroidOpenAccessory openAccessory) throws UsbException {
-        this.openAccessory = openAccessory;
+    public AndroidDevice(UsbDevice usbDevice) throws UsbException {
+        this.usbDevice = usbDevice;
 
-        device = openAccessory.switchDevice();
-
-        UsbConfiguration configuration = device.getActiveUsbConfiguration();
+        UsbConfiguration configuration = usbDevice.getActiveUsbConfiguration();
         iface = configuration.getUsbInterface((byte) 0);
         iface.claim();
 
@@ -47,8 +42,8 @@ public final class AndroidDevice {
     /**
      * @return the device
      */
-    public UsbDevice getDevice() {
-        return device;
+    public UsbDevice getUsbDevice() {
+        return usbDevice;
     }
 
     /**
@@ -71,7 +66,7 @@ public final class AndroidDevice {
      * @throws javax.usb.UsbException
      */
     public void close() throws UsbException {
-        if (device.isConfigured()) {
+        if (usbDevice.isConfigured()) {
             if (writePipe.isOpen()) {
                 writePipe.abortAllSubmissions();
                 writePipe.close();

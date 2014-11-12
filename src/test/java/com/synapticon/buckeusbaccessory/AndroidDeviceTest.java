@@ -25,10 +25,8 @@ public class AndroidDeviceTest {
     @Test
     public void testWriteToTheDevice() throws InterruptedException, UsbException {
 
-        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
-                identifyingInformation,
-                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
-        );
+        AndroidOpenAccessory androidOpenAccessory = new AndroidOpenAccessory(identifyingInformation, DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID);
+        AndroidDevice androidDevice = new AndroidDevice(androidOpenAccessory.switchDevice());
 
         int times = 5;
         while (true) {
@@ -47,10 +45,8 @@ public class AndroidDeviceTest {
     @Test
     public void testReadFromTheDevice() throws InterruptedException, UsbException {
 
-        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
-                identifyingInformation,
-                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
-        );
+        AndroidOpenAccessory androidOpenAccessory = new AndroidOpenAccessory(identifyingInformation, DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID);
+        AndroidDevice androidDevice = new AndroidDevice(androidOpenAccessory.switchDevice());
 
         int times = 3;
         while (true) {
@@ -73,10 +69,8 @@ public class AndroidDeviceTest {
     @Test
     public void testWriteSpeedToTheDevice() throws InterruptedException, UsbException {
 
-        AndroidDevice androidDevice = new AndroidDevice(new AndroidOpenAccessory(
-                identifyingInformation,
-                DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID)
-        );
+        AndroidOpenAccessory androidOpenAccessory = new AndroidOpenAccessory(identifyingInformation, DEVICE_VENDOR_ID, DEVICE_PRODUCT_ID, ACCESSORY_VENDOR_ID, ACCESSORY_PRODUCT_ID);
+        AndroidDevice androidDevice = new AndroidDevice(androidOpenAccessory.switchDevice());
 
         int times = 20;
         while (true) {
