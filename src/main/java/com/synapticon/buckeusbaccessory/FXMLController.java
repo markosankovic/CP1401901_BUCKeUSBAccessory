@@ -28,10 +28,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.WindowEvent;
+import jssc.SerialPort;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
 
 public class FXMLController implements Initializable, LEDUpdater {
 
     static final Logger logger = Logger.getLogger(FXMLController.class.getName());
+
+    public SerialPort serialPort;
+    String portName = "/dev/tty.usbserial-FTK1S42L";
+
+    int baudRate = 9600;
+    int dataBits = 8;
+    int stopBits = 1;
+    int parity = 0;
 
     byte states = 0x21;
 
@@ -180,7 +192,6 @@ public class FXMLController implements Initializable, LEDUpdater {
 
             @Override
             public void publish(LogRecord record) {
-
                 StringBuilder sb = new StringBuilder();
                 sb.append(record.getLevel()).append(": ").append(record.getMessage()).append("\n");
                 final String message = sb.toString();
@@ -237,7 +248,14 @@ public class FXMLController implements Initializable, LEDUpdater {
     }
 
     public void onClose() {
-        logger.log(Level.INFO, "On close");
+        logger.log(Level.INFO, "Close serial port");
+        if (serialPort != null && serialPort.isOpened()) {
+            try {
+                serialPort.closePort();
+            } catch (SerialPortException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
     }
 
     @FXML
@@ -245,7 +263,26 @@ public class FXMLController implements Initializable, LEDUpdater {
 
     @FXML
     void handleOpenSerialPortButtonAction(ActionEvent event) {
-        logger.log(Level.INFO, "Open serial port action");
+        // Open and configure serial port
+        serialPort = new SerialPort(portName);
+        try {
+            logger.log(Level.INFO, "Open serial port: " + serialPort.openPort());
+            logger.log(Level.INFO, "Configure serial port: " + serialPort.setParams(baudRate, dataBits, stopBits, parity));
+
+            // Preparing a mask. In a mask, we need to specify the types of events that we want to track.
+            // Well, for example, we need to know what came some data, thus in the mask must have the
+            // following value: MASK_RXCHAR. If we, for example, still need to know about changes in states 
+            // of lines CTS and DSR, the mask has to look like this: SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR
+            int mask = SerialPort.MASK_RXCHAR;
+            // Set the prepared mask
+            serialPort.setEventsMask(mask);
+            // Add an interface through which we will receive information about events
+            serialPort.addEventListener(new SerialPortReader());
+
+            openSerialPortButton.setDisable(true);
+        } catch (SerialPortException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
     @FXML
@@ -320,6 +357,36 @@ public class FXMLController implements Initializable, LEDUpdater {
                     rect.setFill(color);
                 }
             });
+        }
+    }
+
+    class SerialPortReader implements SerialPortEventListener {
+
+        @Override
+        public void serialEvent(SerialPortEvent event) {
+            // Object type SerialPortEvent carries information about which event occurred and a value.
+            // For example, if the data came a method event.getEventValue() returns us the number of bytes in the input buffer.
+            if (event.isRXCHAR()) {
+                try {
+                    byte buffer[] = serialPort.readBytes(event.getEventValue());
+                    System.out.println(Arrays.toString(buffer));
+                } catch (SerialPortException ex) {
+                    System.out.println(ex);
+                }
+            } //If the CTS line status has changed, then the method event.getEventValue() returns 1 if the line is ON and 0 if it is OFF.
+            else if (event.isCTS()) {
+                if (event.getEventValue() == 1) {
+                    System.out.println("CTS - ON");
+                } else {
+                    System.out.println("CTS - OFF");
+                }
+            } else if (event.isDSR()) {
+                if (event.getEventValue() == 1) {
+                    System.out.println("DSR - ON");
+                } else {
+                    System.out.println("DSR - OFF");
+                }
+            }
         }
     }
 }
