@@ -392,7 +392,8 @@ public class FXMLController implements Initializable, LEDUpdater {
                             break;
                         case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
                             if (numberOfBytes > 2) {
-                                String verificationCode = String.valueOf(Arrays.copyOfRange(buffer, 2, numberOfBytes));
+                                byte[] codeBytes = Arrays.copyOfRange(buffer, 2, numberOfBytes);
+                                String verificationCode = new String(codeBytes);
                                 logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
                                 Thread.sleep(500);
                                 if (code.equals(verificationCode)) {
@@ -473,7 +474,7 @@ public class FXMLController implements Initializable, LEDUpdater {
                     Integer interval = (Integer) sendIntervalChoiceBox.getSelectionModel().getSelectedItem();
                     Thread.sleep(interval);
                 } catch (InterruptedException e) {
-                    logger.log(Level.INFO, "Driving mode thread is interrupted.");
+                    logger.log(Level.INFO, "State message thread is interrupted.");
                     break;
                 }
             }
