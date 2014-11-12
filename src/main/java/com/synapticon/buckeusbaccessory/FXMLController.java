@@ -284,7 +284,7 @@ public class FXMLController implements Initializable, LEDUpdater {
 
     public void onClose() {
         logger.log(Level.INFO, "Interrupt state message thread");
-        if (stateMessageThread.isAlive()) {
+        if (stateMessageThread != null && stateMessageThread.isAlive()) {
             stateMessageThread.interrupt();
         }
 
