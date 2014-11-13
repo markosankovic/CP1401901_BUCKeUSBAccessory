@@ -1,8 +1,6 @@
 package com.synapticon.buckeusbaccessory;
 
-import static com.synapticon.buckeusbaccessory.FXMLController.logger;
 import java.util.Random;
-import java.util.logging.Level;
 
 public class Utils {
 
@@ -57,5 +55,17 @@ public class Utils {
         return combined;
     }
 
-
+    /**
+     * Checksum byte for serial communication.
+     *
+     * @param bytes
+     * @return XOR-ed first byte with all other bytes in array
+     */
+    public static byte checksum(byte[] bytes) {
+        byte checksum = bytes[0];
+        for (int i = 1; i < bytes.length; i++) {
+            checksum ^= bytes[i];
+        }
+        return checksum;
+    }
 }

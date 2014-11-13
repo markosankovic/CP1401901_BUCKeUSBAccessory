@@ -451,8 +451,11 @@ public class FXMLController implements Initializable, LEDUpdater {
             while (true) {
                 try {
                     // Prepare data for the smartphone
-                    ByteBuffer buffer = ByteBuffer.allocate(11);
+                    ByteBuffer buffer = ByteBuffer.allocate(15);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
+                    buffer.put((byte) 0xAA);
+                    buffer.put((byte) 0x55);
+                    buffer.put(OnBoardControllerConstants.OBC_STATE_MESSAGE);
                     buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
                     VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
                     buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
@@ -462,10 +465,11 @@ public class FXMLController implements Initializable, LEDUpdater {
                     buffer.put((byte) remainingDistance); // REMAINING_DISTANCE
                     buffer.putShort((short) totalDistance);
                     buffer.put((byte) remainingBoost);
+                    buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
 
                     // Send data over the serial port
                     try {
-                        serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.OBC_STATE_MESSAGE, buffer.array()));
+                        serialPort.writeBytes(buffer.array());
                     } catch (SerialPortException ex) {
                         logger.log(Level.SEVERE, ex.getMessage(), ex);
                     }
