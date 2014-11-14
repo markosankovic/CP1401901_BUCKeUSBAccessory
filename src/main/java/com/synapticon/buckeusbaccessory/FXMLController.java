@@ -35,14 +35,14 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
-public class FXMLController implements Initializable, LEDUpdater {
+public class FXMLController implements Initializable, LEDUpdater, CommandHandler {
 
     static final Logger logger = Logger.getLogger(FXMLController.class.getName());
 
     public SerialPort serialPort;
     String portName = "/dev/tty.usbserial-FTK1S42L";
 
-    int baudRate = 9600;
+    int baudRate = 57600;
     int dataBits = 8;
     int stopBits = 1;
     int parity = 0;
@@ -61,6 +61,8 @@ public class FXMLController implements Initializable, LEDUpdater {
     @FXML
     TextField codeTextField;
     String code = "qwerty";
+
+    private SmartphoneCommandHandler smartphoneCommandHandler;
 
     @FXML
     void handleCodeTextFieldAction(ActionEvent event) {
@@ -227,6 +229,7 @@ public class FXMLController implements Initializable, LEDUpdater {
         });
 
         drawLEDs();
+        smartphoneCommandHandler = new SmartphoneCommandHandler(this);
     }
 
     void drawLEDs() {
@@ -283,11 +286,6 @@ public class FXMLController implements Initializable, LEDUpdater {
     }
 
     public void onClose() {
-        logger.log(Level.INFO, "Interrupt state message thread");
-        if (stateMessageThread != null && stateMessageThread.isAlive()) {
-            stateMessageThread.interrupt();
-        }
-
         logger.log(Level.INFO, "Close serial port");
         if (serialPort != null && serialPort.isOpened()) {
             try {
@@ -295,6 +293,11 @@ public class FXMLController implements Initializable, LEDUpdater {
             } catch (SerialPortException ex) {
                 logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
+        }
+
+        logger.log(Level.INFO, "Interrupt state message thread");
+        if (stateMessageThread != null && stateMessageThread.isAlive()) {
+            stateMessageThread.interrupt();
         }
     }
 
@@ -381,47 +384,13 @@ public class FXMLController implements Initializable, LEDUpdater {
             // For example, if the data came a method event.getEventValue() returns us the number of bytes in the input buffer.
             if (event.isRXCHAR()) {
                 try {
-                    int numberOfBytes = event.getEventValue();
-                    byte buffer[] = serialPort.readBytes(numberOfBytes);
-                    short command = Utils.twoBytesToShort(buffer[0], buffer[1]);
-
-                    switch (command) {
-                        case OnBoardControllerConstants.SOFT_CLOSE_COMMAND:
-                            logger.log(Level.INFO, "Close request initiated. Send 0x19 to the attached device.");
-                            // TODO: Return OnBoardControllerConstants.SOFT_CLOSE_MESSAGE
-                            break;
-                        case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
-                            if (numberOfBytes > 2) {
-                                byte[] codeBytes = Arrays.copyOfRange(buffer, 2, numberOfBytes);
-                                String verificationCode = new String(codeBytes);
-                                logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
-                                Thread.sleep(500);
-                                if (code.equals(verificationCode)) {
-                                    logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
-                                    serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{0}));
-                                } else {
-                                    logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
-                                    serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{1}));
-                                }
-                            } else {
-                                logger.log(Level.WARNING, "Code is empty.");
-                                serialPort.writeBytes(Utils.prependShortToByteArray(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE, new byte[]{2}));
-                            }
-                            break;
-                        case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
-                            logger.log(Level.INFO, "Release drivetrain");
-                            break;
-                        case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
-                            logger.log(Level.INFO, "Disable drivetrain");
-                            break;
-                        case OnBoardControllerConstants.LED_UPDATE_COMMAND:
-                            byte[] bytes = Arrays.copyOfRange(buffer, 2, numberOfBytes);
-                            updateLED(bytes);
-                            break;
-                        default:
-                            logger.log(Level.WARNING, String.format("No such command: %d", command));
+                    int ret = event.getEventValue();
+                    byte buffer[] = serialPort.readBytes(ret);
+                    int i = 0;
+                    while (i < ret) {
+                        smartphoneCommandHandler.command(buffer[i++]);
                     }
-                } catch (InterruptedException | SerialPortException ex) {
+                } catch (SerialPortException ex) {
                     logger.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             } //If the CTS line status has changed, then the method event.getEventValue() returns 1 if the line is ON and 0 if it is OFF.
@@ -439,6 +408,52 @@ public class FXMLController implements Initializable, LEDUpdater {
                 }
             }
         }
+    }
+
+    @Override
+    public void handleSoftCloseCommand() {
+        // TODO: Return OnBoardControllerConstants.SOFT_CLOSE_MESSAGE
+    }
+
+    @Override
+    public void handleVerifyCodeCommand(byte[] bytes) {
+
+        ByteBuffer buffer = ByteBuffer.allocate(5);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put((byte) 0xAA);
+        buffer.put((byte) 0x55);
+        buffer.put(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE);
+
+        try {
+            if (bytes.length == 0) {
+                logger.log(Level.WARNING, "Code is empty.");
+                buffer.put((byte) 2);
+                buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
+                serialPort.writeBytes(buffer.array());
+            }
+
+            String verificationCode = new String(bytes);
+            logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
+
+            if (code.equals(verificationCode)) {
+                logger.log(Level.INFO, "Code is successfully verified. Notify the attached device.");
+                buffer.put((byte) 0);
+                buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
+                serialPort.writeBytes(buffer.array());
+            } else {
+                logger.log(Level.INFO, "Codes don't match. Send error to the attached device.");
+                buffer.put((byte) 1);
+                buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
+                serialPort.writeBytes(buffer.array());
+            }
+        } catch (SerialPortException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void handleLEDUpdateCommand(byte[] bytes) {
+        updateLED(bytes);
     }
 
     /**
