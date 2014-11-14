@@ -42,9 +42,9 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     public SerialPort serialPort;
     String portName = "/dev/tty.usbserial-FTK1S42L";
 
-    int baudRate = 57600;
+    int baudRate = 115200;
     int dataBits = 8;
-    int stopBits = 1;
+    int stopBits = 2;
     int parity = 0;
 
     byte states = 0x21;
