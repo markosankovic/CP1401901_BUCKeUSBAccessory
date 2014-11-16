@@ -159,10 +159,12 @@ public abstract class LEDAnimation {
      * animation.
      */
     public void stop() {
-        if (animationExecutor.isShutdown() && next != null) {
-            next.stop();
-        } else if (!animationExecutor.isShutdown()) {
-            animationExecutor.shutdownNow();
+        if (animationExecutor != null) {
+            if (animationExecutor.isShutdown() && next != null) {
+                next.stop();
+            } else if (!animationExecutor.isShutdown()) {
+                animationExecutor.shutdownNow();
+            }
         }
     }
 
