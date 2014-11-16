@@ -1,10 +1,10 @@
 package com.synapticon.buckeusbaccessory.lighteffects;
 
-public class LightEffectPattern1 {
+public class LightEffectPatternDiamond implements LightEffectPattern {
 
     LEDAnimation firstLEDAnimation;
 
-    public LightEffectPattern1(LEDUpdater ledUpdater) {
+    public LightEffectPatternDiamond(LEDUpdater ledUpdater) {
         LEDAnimation animation1 = new LEDAnimationPattern1A(ledUpdater, 4000);
         LEDAnimation animation2 = new LEDAnimationPattern1B(ledUpdater, 6000);
         LEDAnimation animation3 = new LEDAnimationPattern1C(ledUpdater, 5000);
@@ -18,11 +18,33 @@ public class LightEffectPattern1 {
         firstLEDAnimation = animation1;
     }
 
+    @Override
     public void start() {
         firstLEDAnimation.start(); // start from the first LED animation and follow the chain
     }
 
+    @Override
     public void stop() {
         firstLEDAnimation.stop();
+    }
+
+    @Override
+    public LightEffectPatternType getType() {
+        return LightEffectPatternType.DIAMOND;
+    }
+
+    @Override
+    public String getName() {
+        return "Diamond";
+    }
+
+    @Override
+    public byte[] getPattern() {
+        return new byte[0];
+    }
+
+    @Override
+    public String getDescription() {
+        return "Light Effects Standard Patterns Diamond Description";
     }
 }

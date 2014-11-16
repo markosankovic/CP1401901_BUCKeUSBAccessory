@@ -12,27 +12,27 @@ import java.util.concurrent.TimeUnit;
  * of the animation expires, this LED animation starts the next one thus forming
  * the chain of animations.
  *
- * Front and rear LED are updated independently and in different periods during
+ * Rear and front LED are updated independently and in different periods during
  * the animation.
  */
 public abstract class LEDAnimation {
 
     private final int duration;
     private final LEDUpdater ledUpdater;
-    private final int frontLEDPeriod;
     private final int rearLEDPeriod;
+    private final int frontLEDPeriod;
 
     private LEDAnimation next;
     private ScheduledExecutorService animationExecutor;
 
-    private byte[] frontLEDBytes = new byte[66];
     private byte[] rearLEDBytes = new byte[159];
+    private byte[] frontLEDBytes = new byte[66];
 
-    public LEDAnimation(LEDUpdater ledUpdater, int duration, int frontLEDPeriod, int rearLEDPeriod) {
+    public LEDAnimation(LEDUpdater ledUpdater, int duration, int rearLEDPeriod, int frontLEDPeriod) {
         this.duration = duration;
         this.ledUpdater = ledUpdater;
-        this.frontLEDPeriod = frontLEDPeriod;
         this.rearLEDPeriod = rearLEDPeriod;
+        this.frontLEDPeriod = frontLEDPeriod;
     }
 
     /**
@@ -64,20 +64,6 @@ public abstract class LEDAnimation {
     }
 
     /**
-     * @return the frontLEDBytes
-     */
-    protected byte[] getFrontLEDBytes() {
-        return frontLEDBytes;
-    }
-
-    /**
-     * @param frontLEDBytes the frontLEDBytes to set
-     */
-    protected void setFrontLEDBytes(byte[] frontLEDBytes) {
-        this.frontLEDBytes = frontLEDBytes;
-    }
-
-    /**
      * @return the rearLEDBytes
      */
     protected byte[] getRearLEDBytes() {
@@ -92,17 +78,31 @@ public abstract class LEDAnimation {
     }
 
     /**
-     * Combines the front and rear LED bytes.
+     * @return the frontLEDBytes
+     */
+    protected byte[] getFrontLEDBytes() {
+        return frontLEDBytes;
+    }
+
+    /**
+     * @param frontLEDBytes the frontLEDBytes to set
+     */
+    protected void setFrontLEDBytes(byte[] frontLEDBytes) {
+        this.frontLEDBytes = frontLEDBytes;
+    }
+
+    /**
+     * Combines the rear and front LED bytes.
      *
-     * Front and rear LED are updated independently and in different time
+     * Rear and front LED are updated independently and in different time
      * intervals.
      *
      * @return
      */
-    protected synchronized byte[] combineFrontAndRearLEDBytes() {
-        byte[] combined = new byte[frontLEDBytes.length + rearLEDBytes.length];
-        System.arraycopy(frontLEDBytes, 0, combined, 0, frontLEDBytes.length);
-        System.arraycopy(rearLEDBytes, 0, combined, frontLEDBytes.length, rearLEDBytes.length);
+    protected synchronized byte[] combineRearAndFrontLEDBytes() {
+        byte[] combined = new byte[rearLEDBytes.length + frontLEDBytes.length];
+        System.arraycopy(rearLEDBytes, 0, combined, 0, rearLEDBytes.length);
+        System.arraycopy(frontLEDBytes, 0, combined, rearLEDBytes.length, frontLEDBytes.length);
         return combined;
     }
 
@@ -110,7 +110,7 @@ public abstract class LEDAnimation {
      * Starts the animation executor.
      *
      * Animation executor runs for the period of provided duration. During the
-     * execution front and rear LED are animated, bytes are combined and sent to
+     * execution rear and front LED are animated, bytes are combined and sent to
      * the OBC.
      */
     public void start() {
@@ -129,15 +129,6 @@ public abstract class LEDAnimation {
             }
         }, duration, TimeUnit.MILLISECONDS);
 
-        // Animate the front LED
-        animationExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                animateFrontLED();
-                updateLED();
-            }
-        }, 0, frontLEDPeriod, TimeUnit.MILLISECONDS);
-
         // Animate the rear LED
         animationExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -146,10 +137,19 @@ public abstract class LEDAnimation {
                 updateLED();
             }
         }, 0, rearLEDPeriod, TimeUnit.MILLISECONDS);
+
+        // Animate the front LED
+        animationExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                animateFrontLED();
+                updateLED();
+            }
+        }, 0, frontLEDPeriod, TimeUnit.MILLISECONDS);
     }
 
     private void updateLED() {
-        ledUpdater.updateLED(combineFrontAndRearLEDBytes());
+        ledUpdater.updateLED(combineRearAndFrontLEDBytes());
     }
 
     /**
@@ -167,15 +167,6 @@ public abstract class LEDAnimation {
     }
 
     /**
-     * Animates the front LED.
-     *
-     * Successive calls to the scheduled animation executor call this method,
-     * which updates the front LED bytes. Updated bytes are combined and sent to
-     * the OBC.
-     */
-    abstract protected void animateFrontLED();
-
-    /**
      * Animates the rear LED.
      *
      * Successive calls to the scheduled animation executor call this method,
@@ -183,4 +174,13 @@ public abstract class LEDAnimation {
      * the OBC.
      */
     abstract protected void animateRearLED();
+
+    /**
+     * Animates the front LED.
+     *
+     * Successive calls to the scheduled animation executor call this method,
+     * which updates the front LED bytes. Updated bytes are combined and sent to
+     * the OBC.
+     */
+    abstract protected void animateFrontLED();
 }

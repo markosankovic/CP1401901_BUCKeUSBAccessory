@@ -1,6 +1,8 @@
 package com.synapticon.buckeusbaccessory;
 
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternRuby;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -63,6 +65,8 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     String code = "qwerty";
 
     private SmartphoneCommandHandler smartphoneCommandHandler;
+
+    private LightEffectPattern lightEffectPattern;
 
     @FXML
     void handleCodeTextFieldAction(ActionEvent event) {
@@ -230,6 +234,9 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
 
         drawLEDs();
         smartphoneCommandHandler = new SmartphoneCommandHandler(this);
+
+        lightEffectPattern = new LightEffectPatternRuby(this);
+        lightEffectPattern.start();
     }
 
     void drawLEDs() {
@@ -287,6 +294,11 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
 
     public void onClose() {
         logger.log(Level.INFO, "Close serial port");
+
+        if (lightEffectPattern != null) {
+            lightEffectPattern.stop();
+        }
+
         if (serialPort != null && serialPort.isOpened()) {
             try {
                 serialPort.closePort();
@@ -344,15 +356,15 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     @Override
     public void updateLED(byte[] bytes) {
 
-        byte[] frontBytes = Arrays.copyOfRange(bytes, 0, 66);
-        byte[] rearBytes = Arrays.copyOfRange(bytes, 66, 225);
+        byte[] rearBytes = Arrays.copyOfRange(bytes, 0, 159);
+        byte[] frontBytes = Arrays.copyOfRange(bytes, 159, 225);
 
-        for (int i = 0, j = 0; i < frontBytes.length && j < frontLightsHBox.getChildren().size(); i += 3, j++) {
-            int r = frontBytes[i] & 0xFF;
-            int g = frontBytes[i + 1] & 0xFF;
-            int b = frontBytes[i + 2] & 0xFF;
+        for (int i = 0, j = 0; i < rearBytes.length && j < rearLightsHBox.getChildren().size(); i += 3, j++) {
+            int r = rearBytes[i] & 0xFF;
+            int g = rearBytes[i + 1] & 0xFF;
+            int b = rearBytes[i + 2] & 0xFF;
             final Color color = Color.rgb(r, g, b);
-            final Rectangle rect = (Rectangle) frontLightsHBox.getChildren().get(j);
+            final Rectangle rect = (Rectangle) rearLightsHBox.getChildren().get(j);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -361,12 +373,12 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
             });
         }
 
-        for (int i = 0, j = 0; i < rearBytes.length && j < rearLightsHBox.getChildren().size(); i += 3, j++) {
-            int r = rearBytes[i] & 0xFF;
-            int g = rearBytes[i + 1] & 0xFF;
-            int b = rearBytes[i + 2] & 0xFF;
+        for (int i = 0, j = 0; i < frontBytes.length && j < frontLightsHBox.getChildren().size(); i += 3, j++) {
+            int r = frontBytes[i] & 0xFF;
+            int g = frontBytes[i + 1] & 0xFF;
+            int b = frontBytes[i + 2] & 0xFF;
             final Color color = Color.rgb(r, g, b);
-            final Rectangle rect = (Rectangle) rearLightsHBox.getChildren().get(j);
+            final Rectangle rect = (Rectangle) frontLightsHBox.getChildren().get(j);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {

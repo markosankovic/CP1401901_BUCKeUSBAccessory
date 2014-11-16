@@ -12,23 +12,45 @@ public class LEDAnimationPattern1C extends LEDAnimation {
 
     private final Random random;
 
-    private boolean flashFrontLED;
-
     private byte[] rearBytes;
-    private int leftPosition = 77;
-    private int rightPosition = 78;
+    private int rearLeftPosition = 77;
+    private int rearRightPosition = 78;
+
+    private boolean frontFlash;
 
     public LEDAnimationPattern1C(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 500, 200);
+        super(ledUpdater, duration, 200, 500);
 
         random = new Random();
         rearBytes = new byte[getRearLEDBytes().length];
     }
 
     @Override
+    protected void animateRearLED() {
+        rearBytes[rearLeftPosition] = (byte) (random.nextInt(5) + 238);
+        rearBytes[rearLeftPosition - 1] = (byte) (random.nextInt(25) + 51);
+        rearBytes[rearLeftPosition - 2] = (byte) random.nextInt(255);
+
+        rearBytes[rearRightPosition] = (byte) random.nextInt(255);
+        rearBytes[rearRightPosition + 1] = (byte) (random.nextInt(25) + 51);
+        rearBytes[rearRightPosition + 2] = (byte) (random.nextInt(5) + 238);
+
+        rearLeftPosition -= 3;
+        rearRightPosition += 3;
+
+        setRearLEDBytes(rearBytes);
+
+        if (rearLeftPosition == 2) {
+            rearLeftPosition = 77;
+            rearRightPosition = 78;
+            rearBytes = new byte[getRearLEDBytes().length];
+        }
+    }
+
+    @Override
     protected void animateFrontLED() {
         byte[] bytes = new byte[getFrontLEDBytes().length];
-        if (flashFrontLED) {
+        if (frontFlash) {
             int r = random.nextInt(254);
             int g = (random.nextInt(10) + 233);
             int b = random.nextInt(16);
@@ -39,29 +61,7 @@ public class LEDAnimationPattern1C extends LEDAnimation {
             }
         }
 
-        flashFrontLED = !flashFrontLED;
+        frontFlash = !frontFlash;
         setFrontLEDBytes(bytes);
-    }
-
-    @Override
-    protected void animateRearLED() {
-        rearBytes[leftPosition] = (byte) (random.nextInt(5) + 238);
-        rearBytes[leftPosition - 1] = (byte) (random.nextInt(25) + 51);
-        rearBytes[leftPosition - 2] = (byte) random.nextInt(255);
-
-        rearBytes[rightPosition] = (byte) random.nextInt(255);
-        rearBytes[rightPosition + 1] = (byte) (random.nextInt(25) + 51);
-        rearBytes[rightPosition + 2] = (byte) (random.nextInt(5) + 238);
-
-        leftPosition -= 3;
-        rightPosition += 3;
-
-        setRearLEDBytes(rearBytes);
-
-        if (leftPosition == 2) {
-            leftPosition = 77;
-            rightPosition = 78;
-            rearBytes = new byte[getRearLEDBytes().length];
-        }
     }
 }

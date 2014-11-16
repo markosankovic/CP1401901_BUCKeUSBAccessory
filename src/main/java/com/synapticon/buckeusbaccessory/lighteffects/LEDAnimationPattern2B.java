@@ -8,15 +8,27 @@ package com.synapticon.buckeusbaccessory.lighteffects;
  */
 public class LEDAnimationPattern2B extends LEDAnimation {
 
-    public LEDAnimationPattern2B(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 1000, 1000);
-    }
+    private boolean rearEven = true;
 
-    @Override
-    protected void animateFrontLED() {
+    public LEDAnimationPattern2B(LEDUpdater ledUpdater, int duration) {
+        super(ledUpdater, duration, 500, 1000);
     }
 
     @Override
     protected void animateRearLED() {
+        byte[] bytes = new byte[getRearLEDBytes().length];
+
+        for (int i = rearEven ? 0 : 3; i < bytes.length; i += 6) {
+            bytes[i] = (byte) 255;
+            bytes[i + 1] = (byte) 204;
+            bytes[i + 2] = (byte) 0;
+        }
+
+        rearEven = !rearEven;
+        setRearLEDBytes(bytes);
+    }
+
+    @Override
+    protected void animateFrontLED() {
     }
 }

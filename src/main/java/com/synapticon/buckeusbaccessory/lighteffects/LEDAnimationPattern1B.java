@@ -8,54 +8,53 @@ package com.synapticon.buckeusbaccessory.lighteffects;
  */
 public class LEDAnimationPattern1B extends LEDAnimation {
 
-    private boolean even = true;
+    private int rearLightPosition;
+    private boolean rearLightDirection;
+    private int rearBrakePosition;
+    private boolean rearBrakeDirection;
 
-    private int lightPosition;
-    private boolean lightDirection;
-
-    private int brakePosition;
-    private boolean brakeDirection;
+    private boolean frontEven = true;
 
     public LEDAnimationPattern1B(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 1000, 200);
-    }
-
-    @Override
-    protected void animateFrontLED() {
-        byte[] bytes = new byte[getFrontLEDBytes().length];
-
-        for (int i = even ? 0 : 3; i < bytes.length; i += 6) {
-            bytes[i] = (byte) 255;
-            bytes[i + 1] = (byte) 204;
-            bytes[i + 2] = (byte) 0;
-        }
-
-        even = !even;
-        setFrontLEDBytes(bytes);
+        super(ledUpdater, duration, 200, 1000);
     }
 
     @Override
     protected void animateRearLED() {
         byte[] bytes = new byte[getRearLEDBytes().length];
 
-        bytes[0 + lightPosition] = (byte) 255;
-        bytes[1 + lightPosition] = (byte) 204;
-        bytes[2 + lightPosition] = (byte) 0;
+        bytes[0 + rearLightPosition] = (byte) 255;
+        bytes[1 + rearLightPosition] = (byte) 204;
+        bytes[2 + rearLightPosition] = (byte) 0;
 
-        bytes[51 + brakePosition] = (byte) 225;
-        bytes[52 + brakePosition] = (byte) 17;
-        bytes[53 + brakePosition] = (byte) 22;
+        bytes[51 + rearBrakePosition] = (byte) 225;
+        bytes[52 + rearBrakePosition] = (byte) 17;
+        bytes[53 + rearBrakePosition] = (byte) 22;
 
-        bytes[108 + lightPosition] = (byte) 255;
-        bytes[109 + lightPosition] = (byte) 204;
-        bytes[110 + lightPosition] = (byte) 0;
+        bytes[108 + rearLightPosition] = (byte) 255;
+        bytes[109 + rearLightPosition] = (byte) 204;
+        bytes[110 + rearLightPosition] = (byte) 0;
 
-        lightDirection = lightPosition == 42 || lightPosition == 0 ? !lightDirection : lightDirection;
-        lightPosition += lightDirection ? 3 : -3;
+        rearLightDirection = rearLightPosition == 42 || rearLightPosition == 0 ? !rearLightDirection : rearLightDirection;
+        rearLightPosition += rearLightDirection ? 3 : -3;
 
-        brakeDirection = brakePosition == 48 || brakePosition == 0 ? !brakeDirection : brakeDirection;
-        brakePosition += brakeDirection ? 3 : -3;
+        rearBrakeDirection = rearBrakePosition == 48 || rearBrakePosition == 0 ? !rearBrakeDirection : rearBrakeDirection;
+        rearBrakePosition += rearBrakeDirection ? 3 : -3;
 
         setRearLEDBytes(bytes);
+    }
+
+    @Override
+    protected void animateFrontLED() {
+        byte[] bytes = new byte[getFrontLEDBytes().length];
+
+        for (int i = frontEven ? 0 : 3; i < bytes.length; i += 6) {
+            bytes[i] = (byte) 255;
+            bytes[i + 1] = (byte) 204;
+            bytes[i + 2] = (byte) 0;
+        }
+
+        frontEven = !frontEven;
+        setFrontLEDBytes(bytes);
     }
 }

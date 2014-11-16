@@ -8,31 +8,17 @@ package com.synapticon.buckeusbaccessory.lighteffects;
  */
 public class LEDAnimationPattern1A extends LEDAnimation {
 
-    private boolean flashFrontLED = true;
-    private boolean flashRearLED = true;
+    private boolean rearFlash = true;
+    private boolean frontFlash = true;
 
     public LEDAnimationPattern1A(LEDUpdater ledUpdater, int duration) {
         super(ledUpdater, duration, 1000, 1000);
     }
 
     @Override
-    protected void animateFrontLED() {
-        byte[] bytes = new byte[getFrontLEDBytes().length];
-        if (flashFrontLED) {
-            for (int i = 0; i < getFrontLEDBytes().length; i += 3) {
-                bytes[i] = (byte) 255;
-                bytes[i + 1] = (byte) 204;
-                bytes[i + 2] = (byte) 0;
-            }
-        }
-        flashFrontLED = !flashFrontLED;
-        setFrontLEDBytes(bytes);
-    }
-
-    @Override
     protected void animateRearLED() {
         byte[] bytes = new byte[getRearLEDBytes().length];
-        if (flashRearLED) {
+        if (rearFlash) {
             for (int i = 0; i < 51; i += 3) {
                 bytes[i] = (byte) 255;
                 bytes[i + 1] = (byte) 204;
@@ -51,7 +37,21 @@ public class LEDAnimationPattern1A extends LEDAnimation {
                 bytes[i + 2] = (byte) 0;
             }
         }
-        flashRearLED = !flashRearLED;
+        rearFlash = !rearFlash;
         setRearLEDBytes(bytes);
+    }
+
+    @Override
+    protected void animateFrontLED() {
+        byte[] bytes = new byte[getFrontLEDBytes().length];
+        if (frontFlash) {
+            for (int i = 0; i < getFrontLEDBytes().length; i += 3) {
+                bytes[i] = (byte) 255;
+                bytes[i + 1] = (byte) 204;
+                bytes[i + 2] = (byte) 0;
+            }
+        }
+        frontFlash = !frontFlash;
+        setFrontLEDBytes(bytes);
     }
 }
