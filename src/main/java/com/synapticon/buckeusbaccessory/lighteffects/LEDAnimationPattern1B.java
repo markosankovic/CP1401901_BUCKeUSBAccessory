@@ -16,7 +16,7 @@ public class LEDAnimationPattern1B extends LEDAnimation {
     private boolean frontEven = true;
 
     public LEDAnimationPattern1B(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 200, 1000);
+        super(ledUpdater, duration, 50, 500);
     }
 
     @Override

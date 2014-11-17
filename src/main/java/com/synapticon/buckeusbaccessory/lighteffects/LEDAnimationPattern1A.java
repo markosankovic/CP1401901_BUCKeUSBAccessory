@@ -12,7 +12,7 @@ public class LEDAnimationPattern1A extends LEDAnimation {
     private boolean frontFlash = true;
 
     public LEDAnimationPattern1A(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 1000, 1000);
+        super(ledUpdater, duration, 500, 500);
     }
 
     @Override

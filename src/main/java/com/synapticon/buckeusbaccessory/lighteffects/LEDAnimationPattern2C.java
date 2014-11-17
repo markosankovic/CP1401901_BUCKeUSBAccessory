@@ -11,42 +11,53 @@ import java.util.Random;
 public class LEDAnimationPattern2C extends LEDAnimation {
 
     private final Random random;
-    
+
+    private final byte[][] rearColors;
+    private int rearPrevColorInd = -1;
+
     private boolean frontFlash = true;
 
     private int rearFlashGroup = 0;
 
     public LEDAnimationPattern2C(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 1000, 1000);
-        
+        super(ledUpdater, duration, 500, 1000);
+
         random = new Random();
+        this.rearColors = new byte[][]{
+            {(byte) 255, 76, (byte) 238},
+            {0, 51, (byte) 243},
+            {0, (byte) 243, 16},
+            {(byte) 254, (byte) 233, 0}
+        };
     }
 
     @Override
     protected void animateRearLED() {
         byte[] bytes = new byte[getRearLEDBytes().length];
 
-        byte r = (byte) random.nextInt(255);
-        byte g = (byte) random.nextInt(255);
-        byte b = (byte) random.nextInt(255);
-        
+        int ind = random.nextInt(4);
+        while (ind == rearPrevColorInd) {
+            ind = random.nextInt(4);
+        }
+        byte[] color = rearColors[rearPrevColorInd = ind];
+
         if (rearFlashGroup == 0) {
             for (int i = 0; i < 51; i += 3) {
-                bytes[i] = r;
-                bytes[i + 1] = g;
-                bytes[i + 2] = b;
+                bytes[i] = color[0];
+                bytes[i + 1] = color[1];
+                bytes[i + 2] = color[2];
             }
         } else if (rearFlashGroup == 1) {
             for (int i = 51; i < 108; i += 3) {
-                bytes[i] = r;
-                bytes[i + 1] = g;
-                bytes[i + 2] = b;
+                bytes[i] = color[0];
+                bytes[i + 1] = color[1];
+                bytes[i + 2] = color[2];
             }
         } else if (rearFlashGroup == 2) {
             for (int i = 108; i < 159; i += 3) {
-                bytes[i] = r;
-                bytes[i + 1] = g;
-                bytes[i + 2] = b;
+                bytes[i] = color[0];
+                bytes[i + 1] = color[1];
+                bytes[i + 2] = color[2];
             }
         }
 

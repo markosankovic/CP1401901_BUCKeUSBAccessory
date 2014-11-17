@@ -27,13 +27,18 @@ public class LEDAnimationPattern1C extends LEDAnimation {
 
     @Override
     protected void animateRearLED() {
-        rearBytes[rearLeftPosition] = (byte) (random.nextInt(5) + 238);
-        rearBytes[rearLeftPosition - 1] = (byte) (random.nextInt(25) + 51);
-        rearBytes[rearLeftPosition - 2] = (byte) random.nextInt(255);
 
-        rearBytes[rearRightPosition] = (byte) random.nextInt(255);
-        rearBytes[rearRightPosition + 1] = (byte) (random.nextInt(25) + 51);
-        rearBytes[rearRightPosition + 2] = (byte) (random.nextInt(5) + 238);
+        int r = random.nextInt(255);
+        int g = random.nextInt(25) + 51;
+        int b = random.nextInt(5) + 238;
+
+        rearBytes[rearLeftPosition] = (byte) b;
+        rearBytes[rearLeftPosition - 1] = (byte) g;
+        rearBytes[rearLeftPosition - 2] = (byte) r;
+
+        rearBytes[rearRightPosition] = (byte) r;
+        rearBytes[rearRightPosition + 1] = (byte) g;
+        rearBytes[rearRightPosition + 2] = (byte) b;
 
         rearLeftPosition -= 3;
         rearRightPosition += 3;

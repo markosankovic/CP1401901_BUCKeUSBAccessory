@@ -2,6 +2,7 @@ package com.synapticon.buckeusbaccessory;
 
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternDiamond;
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternRuby;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -235,7 +236,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         drawLEDs();
         smartphoneCommandHandler = new SmartphoneCommandHandler(this);
 
-        lightEffectPattern = new LightEffectPatternRuby(this);
+        lightEffectPattern = new LightEffectPatternDiamond(this);
         // lightEffectPattern.start();
     }
 
