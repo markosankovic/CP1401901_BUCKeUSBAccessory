@@ -139,6 +139,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         vehicleStateObservableList.add(new VehicleState("Sailing", (byte) 0x03));
         vehicleStateObservableList.add(new VehicleState("Driving", (byte) 0x04));
         vehicleStateObservableList.add(new VehicleState("Boost", (byte) 0x05));
+        vehicleStateObservableList.add(new VehicleState("UNDEFINED", (byte) 0x10));
         vehicleStateChoiceBox.setItems(vehicleStateObservableList);
         vehicleStateChoiceBox.getSelectionModel().select(0);
 
@@ -237,7 +238,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         smartphoneCommandHandler = new SmartphoneCommandHandler(this);
 
         lightEffectPattern = new LightEffectPatternDiamond(this);
-        // lightEffectPattern.start();
+        lightEffectPattern.start();
     }
 
     void drawLEDs() {
