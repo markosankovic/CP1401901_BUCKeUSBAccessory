@@ -19,7 +19,7 @@ public class LEDAnimationPattern2D extends LEDAnimation {
     private boolean frontIsLeft = true;
 
     public LEDAnimationPattern2D(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 500, 500);
+        super(ledUpdater, duration, 500, 600);
 
         random = new Random();
         this.rearColors = new byte[][]{
