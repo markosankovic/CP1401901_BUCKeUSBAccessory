@@ -13,13 +13,12 @@ public class LEDAnimationPattern1C extends LEDAnimation {
     private final Random random;
 
     private byte[] rearBytes;
-    private int rearLeftPosition = 77;
-    private int rearRightPosition = 78;
+    private int rearCurrent = 0;
 
     private boolean frontFlash;
 
     public LEDAnimationPattern1C(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 200, 500);
+        super(ledUpdater, duration, 100, 500);
 
         random = new Random();
         rearBytes = new byte[getRearLEDBytes().length];
@@ -27,29 +26,26 @@ public class LEDAnimationPattern1C extends LEDAnimation {
 
     @Override
     protected void animateRearLED() {
-
-        int r = random.nextInt(255);
-        int g = random.nextInt(25) + 51;
-        int b = random.nextInt(5) + 238;
-
-        rearBytes[rearLeftPosition] = (byte) b;
-        rearBytes[rearLeftPosition - 1] = (byte) g;
-        rearBytes[rearLeftPosition - 2] = (byte) r;
-
-        rearBytes[rearRightPosition] = (byte) r;
-        rearBytes[rearRightPosition + 1] = (byte) g;
-        rearBytes[rearRightPosition + 2] = (byte) b;
-
-        rearLeftPosition -= 3;
-        rearRightPosition += 3;
-
-        setRearLEDBytes(rearBytes);
-
-        if (rearLeftPosition == 2) {
-            rearLeftPosition = 77;
-            rearRightPosition = 78;
+        if (rearCurrent == 27) {
+            rearCurrent = 0;
             rearBytes = new byte[getRearLEDBytes().length];
         }
+
+        byte r = (byte) (random.nextInt(255));
+        byte g = (byte) (random.nextInt(25) + 51);
+        byte b = (byte) (random.nextInt(5) + 238);
+
+        int rearInd = (26 - rearCurrent) * 3;
+
+        for (int i = 0; i < rearCurrent * 6 + 3; i += 3) {
+            rearBytes[rearInd + i] = r;
+            rearBytes[rearInd + i + 1] = g;
+            rearBytes[rearInd + i + 2] = b;
+        }
+
+        rearCurrent++;
+
+        setRearLEDBytes(rearBytes);
     }
 
     @Override

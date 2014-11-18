@@ -237,7 +237,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         drawLEDs();
         smartphoneCommandHandler = new SmartphoneCommandHandler(this);
 
-        lightEffectPattern = new LightEffectPatternRuby(this);
+        lightEffectPattern = new LightEffectPatternDiamond(this);
         lightEffectPattern.start();
     }
 
