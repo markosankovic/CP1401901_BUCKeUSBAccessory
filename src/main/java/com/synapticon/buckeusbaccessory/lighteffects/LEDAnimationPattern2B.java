@@ -20,7 +20,7 @@ public class LEDAnimationPattern2B extends LEDAnimation {
     private boolean frontDirection;
 
     public LEDAnimationPattern2B(LEDUpdater ledUpdater, int duration) {
-        super(ledUpdater, duration, 500, 20);
+        super(ledUpdater, duration, 500, 15);
 
         random = new Random();
         frontBytes = new byte[getFrontLEDBytes().length];
