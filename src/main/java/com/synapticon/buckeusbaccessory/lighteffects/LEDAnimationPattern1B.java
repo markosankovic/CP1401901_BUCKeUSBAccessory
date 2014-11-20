@@ -35,10 +35,10 @@ public class LEDAnimationPattern1B extends LEDAnimation {
         bytes[109 + rearLightPosition] = (byte) 204;
         bytes[110 + rearLightPosition] = (byte) 0;
 
-        rearLightDirection = rearLightPosition == 42 || rearLightPosition == 0 ? !rearLightDirection : rearLightDirection;
+        rearLightDirection = rearLightPosition == 48 || rearLightPosition == 0 ? !rearLightDirection : rearLightDirection;
         rearLightPosition += rearLightDirection ? 3 : -3;
 
-        rearBrakeDirection = rearBrakePosition == 48 || rearBrakePosition == 0 ? !rearBrakeDirection : rearBrakeDirection;
+        rearBrakeDirection = rearBrakePosition == 54 || rearBrakePosition == 0 ? !rearBrakeDirection : rearBrakeDirection;
         rearBrakePosition += rearBrakeDirection ? 3 : -3;
 
         setRearLEDBytes(bytes);
