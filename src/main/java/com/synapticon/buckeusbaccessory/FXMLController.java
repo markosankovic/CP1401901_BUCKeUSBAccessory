@@ -267,6 +267,9 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     Button openSerialPortButton;
 
     @FXML
+    Button closeSerialPortButton;
+
+    @FXML
     void handleOpenSerialPortButtonAction(ActionEvent event) {
         // Open and configure serial port
         serialPort = new SerialPort(portName);
@@ -289,8 +292,23 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
             stateMessageThread.start();
 
             openSerialPortButton.setDisable(true);
+            closeSerialPortButton.setDisable(false);
         } catch (SerialPortException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
+    @FXML
+    void handleCloseSerialPortButtonAction(ActionEvent event) {
+        if (serialPort != null && serialPort.isOpened()) {
+            try {
+                serialPort.closePort();
+                stateMessageThread.interrupt();
+                openSerialPortButton.setDisable(false);
+                closeSerialPortButton.setDisable(true);
+            } catch (SerialPortException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
         }
     }
 
@@ -348,6 +366,12 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     @FXML
     void handleGasThrottleIdleStateToggleButtonAction(ActionEvent event) {
         states = (byte) (states ^ 0x20);
+        logFlags(states);
+    }
+
+    @FXML
+    void handleHornButtonButtonAction(ActionEvent event) {
+        states = (byte) (states ^ 0x40);
         logFlags(states);
     }
 

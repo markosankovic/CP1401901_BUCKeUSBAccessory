@@ -9,13 +9,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.synapticon.buckeusbaccessory.FXMLController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="576.0" prefWidth="1152.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.synapticon.buckeusbaccessory.FXMLController">
     <children>
-      <VBox prefHeight="576.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox prefHeight="576.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ToolBar prefHeight="40.0">
               <items>
                   <Button fx:id="openSerialPortButton" mnemonicParsing="false" onAction="#handleOpenSerialPortButtonAction" text="Open Serial Port" />
+                  <Button fx:id="closeSerialPortButton" disable="true" mnemonicParsing="false" onAction="#handleCloseSerialPortButtonAction" text="Close Serial Port" />
                   <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                   <Label text="Code:" />
                   <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" promptText="to verify against" text="qwerty" />
@@ -41,6 +42,7 @@
                   <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggleButtonAction" text="LEFT TURN SIGNAL" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggleButtonAction" text="RIGHT TURN SIGNAL" />
                   <ToggleButton mnemonicParsing="false" onAction="#handleGasThrottleIdleStateToggleButtonAction" selected="true" text="GAS THROTTLE IDLE STATE" />
+                  <ToggleButton mnemonicParsing="false" onAction="#handleHornButtonButtonAction" text="HORN BUTTON" />
                </items>
             </ToolBar>
             <GridPane hgap="10.0" prefHeight="120.0">
