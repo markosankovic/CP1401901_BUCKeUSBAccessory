@@ -375,6 +375,12 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         logFlags(states);
     }
 
+    @FXML
+    void handleBrakeButtonAction(ActionEvent event) {
+        states = (byte) (states ^ 0x80);
+        logFlags(states);
+    }
+
     void logFlags(byte flags) {
         logger.log(Level.INFO, String.format("%8s", Integer.toBinaryString(flags & 0xFF)).replace(' ', '0'));
     }

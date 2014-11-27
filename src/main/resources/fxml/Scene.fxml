@@ -8,127 +8,153 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
 <AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="576.0" prefWidth="1152.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.synapticon.buckeusbaccessory.FXMLController">
     <children>
-      <VBox prefHeight="576.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <ToolBar prefHeight="40.0">
-              <items>
-                  <Button fx:id="openSerialPortButton" mnemonicParsing="false" onAction="#handleOpenSerialPortButtonAction" text="Open Serial Port" />
-                  <Button fx:id="closeSerialPortButton" disable="true" mnemonicParsing="false" onAction="#handleCloseSerialPortButtonAction" text="Close Serial Port" />
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
-                  <Label text="Code:" />
-                  <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" promptText="to verify against" text="qwerty" />
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
-                  <Label text="Send interval:" />
-                  <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
-                  <Label text="ms" />
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
-                  <Label text="Vehicle state:" />
-                  <ChoiceBox fx:id="vehicleStateChoiceBox" prefWidth="150.0" />
-              </items>
-            </ToolBar>
-            <ToolBar prefHeight="40.0">
-               <items>
-                  <Label text="States:">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-                  <ToggleButton mnemonicParsing="false" onAction="#handleSmartphoneConnectedToggleButtonAction" selected="true" text="SMARTPHONE CONNECTED" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleHeadlightToggleButtonAction" text="HEADLIGHT" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleCameraToggleButtonAction" text="CAMERA" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggleButtonAction" text="LEFT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggleButtonAction" text="RIGHT TURN SIGNAL" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleGasThrottleIdleStateToggleButtonAction" selected="true" text="GAS THROTTLE IDLE STATE" />
-                  <ToggleButton mnemonicParsing="false" onAction="#handleHornButtonButtonAction" text="HORN BUTTON" />
-               </items>
-            </ToolBar>
-            <GridPane hgap="10.0" prefHeight="120.0">
-              <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints maxHeight="138.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="45.0" minHeight="0.0" prefHeight="12.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
-                  <Slider fx:id="batteryPowerSlider" blockIncrement="1.0" majorTickUnit="512.0" max="512.0" min="-512.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" />
-                  <Slider fx:id="batteryStateOfChargeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="80.0" GridPane.columnIndex="2" />
-                  <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" majorTickUnit="50.0" max="255.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="150.0" GridPane.columnIndex="3" />
-                  <Slider fx:id="totalDistanceSlider" blockIncrement="1.0" majorTickUnit="16300.0" max="65535.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="950.0" GridPane.columnIndex="4" />
-                  <Slider fx:id="remainingBoostSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="20.0" GridPane.columnIndex="5" />
-                  <Label text="VEHICLE VELOCITY (km/h)" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label text="BATTERY POWER (A)" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label text="BATTERY STATE OF CHARGE (%)" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label text="REMAINING DISTANCE (km)" GridPane.columnIndex="3" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label text="TOTAL DISTANCE (km)" GridPane.columnIndex="4" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label text="REMAINING BOOST (%)" GridPane.columnIndex="5" GridPane.rowIndex="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-               </children>
-               <VBox.margin>
-                  <Insets left="10.0" right="10.0" top="10.0" />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="10.0" />
-               </padding>
-            </GridPane>
-            <Separator />
-            <VBox prefWidth="1024.0" style="-fx-background-color: #000000;">
-               <children>
-                  <HBox fx:id="frontLightsHBox" alignment="CENTER" prefHeight="10.0" prefWidth="1024.0" spacing="3.0" VBox.vgrow="NEVER">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <padding>
+        <VBox prefHeight="576.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <ToolBar prefHeight="40.0">
+                    <items>
+                        <Button fx:id="openSerialPortButton" mnemonicParsing="false" onAction="#handleOpenSerialPortButtonAction" text="Open Serial Port" />
+                        <Button fx:id="closeSerialPortButton" disable="true" mnemonicParsing="false" onAction="#handleCloseSerialPortButtonAction" text="Close Serial Port" />
+                        <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
+                        <Label text="Code:" />
+                        <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" promptText="to verify against" text="qwerty" />
+                        <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
+                        <Label text="Send interval:" />
+                        <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
+                        <Label text="ms" />
+                        <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
+                        <Label text="Vehicle state:" />
+                        <ChoiceBox fx:id="vehicleStateChoiceBox" prefWidth="150.0" />
+                    </items>
+                </ToolBar>
+                <ToolBar prefHeight="40.0">
+                    <items>
+                        <Label text="States:">
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </Label>
+                        <ToggleButton mnemonicParsing="false" onAction="#handleSmartphoneConnectedToggleButtonAction" selected="true">
+                            <graphic>
+                                <ImageView preserveRatio="true">
+                                    <image>
+                                        <Image url="@smartphone_connected.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton mnemonicParsing="false" onAction="#handleHeadlightToggleButtonAction">
+                            <graphic>
+                                <ImageView preserveRatio="true" >
+                                    <image>
+                                        <Image url="@headlight.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton mnemonicParsing="false" onAction="#handleCameraToggleButtonAction">
+                            <graphic>
+                                <ImageView preserveRatio="true">
+                                    <image>
+                                        <Image url="@camera.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton mnemonicParsing="false" onAction="#handleLeftTurnSignalToggleButtonAction" text="LEFT TURN SIGNAL" />
+                        <ToggleButton mnemonicParsing="false" onAction="#handleRightTurnSignalToggleButtonAction" text="RIGHT TURN SIGNAL" />
+                        <ToggleButton mnemonicParsing="false" onAction="#handleGasThrottleIdleStateToggleButtonAction" selected="true" text="GAS THROTTLE IDLE STATE" />
+                        <ToggleButton mnemonicParsing="false" onAction="#handleHornButtonButtonAction" text="HORN BUTTON" />
+                        <ToggleButton mnemonicParsing="false" onAction="#handleBrakeButtonAction" text="BRAKE" />
+                    </items>
+                </ToolBar>
+                <GridPane hgap="10.0" prefHeight="120.0">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="138.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="45.0" minHeight="0.0" prefHeight="12.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
+                        <Slider fx:id="batteryPowerSlider" blockIncrement="1.0" majorTickUnit="512.0" max="512.0" min="-512.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" />
+                        <Slider fx:id="batteryStateOfChargeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="80.0" GridPane.columnIndex="2" />
+                        <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" majorTickUnit="50.0" max="255.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="150.0" GridPane.columnIndex="3" />
+                        <Slider fx:id="totalDistanceSlider" blockIncrement="1.0" majorTickUnit="16300.0" max="65535.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="950.0" GridPane.columnIndex="4" />
+                        <Slider fx:id="remainingBoostSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="20.0" GridPane.columnIndex="5" />
+                        <Label text="VEHICLE VELOCITY (km/h)" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label text="BATTERY POWER (A)" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label text="BATTERY STATE OF CHARGE (%)" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label text="REMAINING DISTANCE (km)" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label text="TOTAL DISTANCE (km)" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label text="REMAINING BOOST (%)" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <VBox.margin>
+                        <Insets left="10.0" right="10.0" top="10.0" />
+                    </VBox.margin>
+                    <padding>
                         <Insets bottom="10.0" />
-                     </padding>
-                  </HBox>
-                  <HBox fx:id="rearLightsHBox" alignment="CENTER" prefHeight="10.0" prefWidth="1024.0" spacing="3.0" />
-               </children>
-               <VBox.margin>
-                  <Insets top="7.0" />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </VBox>
-            <TextArea fx:id="logTextArea" prefHeight="272.0" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </VBox.margin>
-            </TextArea>
-         </children>
-      </VBox>
+                    </padding>
+                </GridPane>
+                <Separator />
+                <VBox prefWidth="1024.0" style="-fx-background-color: #000000;">
+                    <children>
+                        <HBox fx:id="frontLightsHBox" alignment="CENTER" prefHeight="10.0" prefWidth="1024.0" spacing="3.0" VBox.vgrow="NEVER">
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="10.0" />
+                            </padding>
+                        </HBox>
+                        <HBox fx:id="rearLightsHBox" alignment="CENTER" prefHeight="10.0" prefWidth="1024.0" spacing="3.0" />
+                    </children>
+                    <VBox.margin>
+                        <Insets top="7.0" />
+                    </VBox.margin>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+                <TextArea fx:id="logTextArea" prefHeight="272.0" VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </VBox.margin>
+                </TextArea>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>
