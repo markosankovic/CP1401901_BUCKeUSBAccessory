@@ -80,6 +80,8 @@ public class SmartphoneCommandHandler {
                             handler.handleLEDUpdateCommand(payload.toByteArray());
                             break;
                     }
+                } else {
+                    handler.handleIncorrectChecksum(b, checksum);
                 }
                 state = ReadState.HEADER_0; // start from beginning
             default:

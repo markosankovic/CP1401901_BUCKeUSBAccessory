@@ -3,7 +3,6 @@ package com.synapticon.buckeusbaccessory;
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern;
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternDiamond;
-import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternRuby;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -418,6 +417,11 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
                 }
             });
         }
+    }
+
+    @Override
+    public void handleIncorrectChecksum(byte b, byte checksum) {
+        logger.log(Level.WARNING, String.format("Incorrect checksum: %d %d", b, checksum));
     }
 
     class SerialPortReader implements SerialPortEventListener {

@@ -7,4 +7,6 @@ public interface CommandHandler {
     void handleVerifyCodeCommand(byte[] bytes);
 
     void handleLEDUpdateCommand(byte[] bytes);
+    
+    void handleIncorrectChecksum(byte b, byte checksum);
 }
