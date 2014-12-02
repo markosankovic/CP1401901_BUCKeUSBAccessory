@@ -465,22 +465,26 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
 
     /**
      * Handle verify code command
+     *
      * @param bytes 24 bytes long code with NULL padding
      */
     @Override
     public void handleVerifyCodeCommand(byte[] bytes) {
 
-        ByteBuffer buffer = ByteBuffer.allocate(5);
+        ByteBuffer buffer = ByteBuffer.allocate(6);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte) 0xAA);
         buffer.put((byte) 0x55);
+        buffer.put((byte) 0x02);
         buffer.put(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE);
 
         // Grab code from byte array, might be padded with ASCII NULL
         int i = bytes.length - 1;
-        while (bytes[i] == '\0') i--;
+        while (bytes[i] == '\0') {
+            i--;
+        }
         String verificationCode = new String(Arrays.copyOf(bytes, i + 1));
-        
+
         try {
             if (verificationCode.length() == 0) {
                 logger.log(Level.WARNING, "Code is empty.");
