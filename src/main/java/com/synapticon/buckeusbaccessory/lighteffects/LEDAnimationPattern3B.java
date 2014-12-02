@@ -3,12 +3,12 @@ package com.synapticon.buckeusbaccessory.lighteffects;
 import java.util.Random;
 
 /**
- * LIGHT EFFECTS - PATTERN 2 / LED Animation B
+ * LIGHT EFFECTS - PATTERN 3 / LED Animation B
  * <p/>
  * Back: Even and odd blocks alternately flash; Front: Flash like a
  * Equalizer(from middle to both side); last 4s.
  */
-public class LEDAnimationPattern2B extends LEDAnimation {
+public class LEDAnimationPattern3B extends LEDAnimation {
 
     private final Random random;
 
@@ -19,7 +19,7 @@ public class LEDAnimationPattern2B extends LEDAnimation {
     private int frontCurrent;
     private boolean frontDirection;
 
-    public LEDAnimationPattern2B(LEDUpdater ledUpdater, int duration) {
+    public LEDAnimationPattern3B(LEDUpdater ledUpdater, int duration) {
         super(ledUpdater, duration, 500, 15);
 
         random = new Random();
@@ -31,9 +31,9 @@ public class LEDAnimationPattern2B extends LEDAnimation {
         byte[] bytes = new byte[getRearLEDBytes().length];
 
         for (int i = rearEven ? 0 : 3; i < bytes.length; i += 6) {
-            bytes[i] = (byte) 36;
-            bytes[i + 1] = (byte) 148;
-            bytes[i + 2] = (byte) 253;
+            bytes[i] = (byte) 255;
+            bytes[i + 1] = (byte) 204;
+            bytes[i + 2] = (byte) 0;
         }
 
         rearEven = !rearEven;
@@ -50,13 +50,13 @@ public class LEDAnimationPattern2B extends LEDAnimation {
         int rearLeftInd = (10 - frontCurrent) * 3;
         int rearRightInd = (11 + frontCurrent) * 3;
 
-        frontBytes[rearLeftInd] = frontDirection ? (byte) 36 : 0;
-        frontBytes[rearLeftInd + 1] = frontDirection ? (byte) 148 : 0;
-        frontBytes[rearLeftInd + 2] = frontDirection ? (byte) 253 : 0;
+        frontBytes[rearLeftInd] = frontDirection ? (byte) 255 : 0;
+        frontBytes[rearLeftInd + 1] = frontDirection ? (byte) 204 : 0;
+        frontBytes[rearLeftInd + 2] = frontDirection ? (byte) 0 : 0;
 
-        frontBytes[rearRightInd] = frontDirection ? (byte) 36 : 0;
-        frontBytes[rearRightInd + 1] = frontDirection ? (byte) 148 : 0;
-        frontBytes[rearRightInd + 2] = frontDirection ? (byte) 253 : 0;
+        frontBytes[rearRightInd] = frontDirection ? (byte) 255 : 0;
+        frontBytes[rearRightInd + 1] = frontDirection ? (byte) 204 : 0;
+        frontBytes[rearRightInd + 2] = frontDirection ? (byte) 0 : 0;
 
         if (frontCurrent != frontTarget) { // case when random is the same as previous, prevents IndexOutOfBounds
             frontCurrent += frontDirection ? 1 : -1;

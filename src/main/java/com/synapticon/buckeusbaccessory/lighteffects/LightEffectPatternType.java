@@ -2,7 +2,7 @@ package com.synapticon.buckeusbaccessory.lighteffects;
 
 public enum LightEffectPatternType {
 
-    DIAMOND("DIAMOND"), RUBY("RUBY");
+    CHRISTMAS("CHRISTMAS"), MONO_BLUE("MONO_BLUE"), MONO_ORANGE("MONO_ORANGE");
 
     private final String type;
 
@@ -16,5 +16,5 @@ public enum LightEffectPatternType {
 
     public String toString() {
         return type;
-    }    
+    }
 }

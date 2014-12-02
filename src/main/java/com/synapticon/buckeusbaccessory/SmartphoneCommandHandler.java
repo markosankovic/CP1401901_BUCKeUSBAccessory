@@ -1,6 +1,7 @@
 package com.synapticon.buckeusbaccessory;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 public class SmartphoneCommandHandler {
 
@@ -57,7 +58,7 @@ public class SmartphoneCommandHandler {
                 checksum ^= b; // XOR checksum with payload byte
                 switch (command) {
                     case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
-                        if (payload.size() == 6) { // verify code length
+                        if (payload.size() == 24) { // verify code length
                             state = ReadState.CHECKSUM;
                         }
                         break;

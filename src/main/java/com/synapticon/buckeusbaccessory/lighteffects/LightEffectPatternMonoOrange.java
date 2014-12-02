@@ -1,14 +1,14 @@
 package com.synapticon.buckeusbaccessory.lighteffects;
 
-public class LightEffectPatternRuby implements LightEffectPattern {
+public class LightEffectPatternMonoOrange implements LightEffectPattern {
 
     LEDAnimation firstLEDAnimation;
 
-    public LightEffectPatternRuby(LEDUpdater ledUpdater) {
-        LEDAnimation animation1 = new LEDAnimationPattern2A(ledUpdater, 5000);
-        LEDAnimation animation2 = new LEDAnimationPattern2B(ledUpdater, 4000);
-        LEDAnimation animation3 = new LEDAnimationPattern2C(ledUpdater, 6000);
-        LEDAnimation animation4 = new LEDAnimationPattern2D(ledUpdater, 5000);
+    public LightEffectPatternMonoOrange(LEDUpdater ledUpdater) {
+        LEDAnimation animation1 = new LEDAnimationPattern3A(ledUpdater, 5000);
+        LEDAnimation animation2 = new LEDAnimationPattern3B(ledUpdater, 4000);
+        LEDAnimation animation3 = new LEDAnimationPattern3C(ledUpdater, 6000);
+        LEDAnimation animation4 = new LEDAnimationPattern3D(ledUpdater, 5000);
 
         animation1.setNext(animation2);
         animation2.setNext(animation3);
@@ -18,22 +18,24 @@ public class LightEffectPatternRuby implements LightEffectPattern {
         firstLEDAnimation = animation1;
     }
 
+    @Override
     public void start() {
         firstLEDAnimation.start(); // start from the first LED animation and follow the chain
     }
 
+    @Override
     public void stop() {
         firstLEDAnimation.stop();
     }
 
     @Override
     public LightEffectPatternType getType() {
-        return LightEffectPatternType.RUBY;
+        return LightEffectPatternType.MONO_ORANGE;
     }
 
     @Override
     public String getName() {
-        return "Ruby";
+        return "Mono-Orange";
     }
 
     @Override
@@ -43,6 +45,6 @@ public class LightEffectPatternRuby implements LightEffectPattern {
 
     @Override
     public String getDescription() {
-        return "Light Effects Standard Patterns Ruby Description";
+        return "Light Effects Standard Patterns Mono-Orange Description";
     }
 }

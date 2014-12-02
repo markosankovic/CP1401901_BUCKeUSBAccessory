@@ -2,7 +2,7 @@ package com.synapticon.buckeusbaccessory;
 
 import com.synapticon.buckeusbaccessory.lighteffects.LEDUpdater;
 import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPattern;
-import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternDiamond;
+import com.synapticon.buckeusbaccessory.lighteffects.LightEffectPatternChristmas;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -123,7 +123,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
             }
         });
 
-        // Set initial code
+        // Set initial verificationCode
         code = codeTextField.getText();
 
         // Send Interval
@@ -236,7 +236,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         drawLEDs();
         smartphoneCommandHandler = new SmartphoneCommandHandler(this);
 
-        lightEffectPattern = new LightEffectPatternDiamond(this);
+        lightEffectPattern = new LightEffectPatternChristmas(this);
         // lightEffectPattern.start();
     }
 
@@ -463,6 +463,10 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         // TODO: Return OnBoardControllerConstants.SOFT_CLOSE_MESSAGE
     }
 
+    /**
+     * Handle verify code command
+     * @param bytes 24 bytes long code with NULL padding
+     */
     @Override
     public void handleVerifyCodeCommand(byte[] bytes) {
 
@@ -472,15 +476,19 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         buffer.put((byte) 0x55);
         buffer.put(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE);
 
+        // Grab code from byte array, might be padded with ASCII NULL
+        int i = bytes.length - 1;
+        while (bytes[i] == '\0') i--;
+        String verificationCode = new String(Arrays.copyOf(bytes, i + 1));
+        
         try {
-            if (bytes.length == 0) {
+            if (verificationCode.length() == 0) {
                 logger.log(Level.WARNING, "Code is empty.");
                 buffer.put((byte) 2);
                 buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
                 serialPort.writeBytes(buffer.array());
             }
 
-            String verificationCode = new String(bytes);
             logger.log(Level.INFO, String.format("Code verification requested: " + verificationCode));
 
             if (code.equals(verificationCode)) {

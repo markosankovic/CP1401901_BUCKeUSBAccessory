@@ -1,12 +1,12 @@
 package com.synapticon.buckeusbaccessory.lighteffects;
 
 /**
- * LIGHT EFFECTS - PATTERN 2 / LED Animation A
+ * LIGHT EFFECTS - PATTERN 3 / LED Animation A
  * <p/>
  * Back: 7 LEDs block scroll left to right than right to left; Front: Single LED
  * scroll back and forth fast; last 5s.
  */
-public class LEDAnimationPattern2A extends LEDAnimation {
+public class LEDAnimationPattern3A extends LEDAnimation {
 
     private int rearPosition = 0;
     private boolean rearDirection;
@@ -16,7 +16,7 @@ public class LEDAnimationPattern2A extends LEDAnimation {
     private int frontRightPosition;
     private boolean frontRightDirection;
 
-    public LEDAnimationPattern2A(LEDUpdater ledUpdater, int duration) {
+    public LEDAnimationPattern3A(LEDUpdater ledUpdater, int duration) {
         super(ledUpdater, duration, 30, 60);
     }
 
@@ -27,9 +27,9 @@ public class LEDAnimationPattern2A extends LEDAnimation {
         rearDirection = rearPosition == 138 || rearPosition == 0 ? !rearDirection : rearDirection;
 
         for (int i = rearPosition; i < rearPosition + 21; i += 3) {
-            bytes[0 + i] = (byte) 36;
-            bytes[1 + i] = (byte) 148;
-            bytes[2 + i] = (byte) 253;
+            bytes[0 + i] = (byte) 255;
+            bytes[1 + i] = (byte) 204;
+            bytes[2 + i] = (byte) 0;
         }
 
         rearPosition += rearDirection ? 3 : -3;
@@ -41,13 +41,13 @@ public class LEDAnimationPattern2A extends LEDAnimation {
     protected void animateFrontLED() {
         byte[] bytes = new byte[getFrontLEDBytes().length];
 
-        bytes[0 + frontLeftPosition] = (byte) 36;
-        bytes[1 + frontLeftPosition] = (byte) 148;
-        bytes[2 + frontLeftPosition] = (byte) 253;
+        bytes[0 + frontLeftPosition] = (byte) 255;
+        bytes[1 + frontLeftPosition] = (byte) 204;
+        bytes[2 + frontLeftPosition] = (byte) 0;
 
-        bytes[33 + frontRightPosition] = (byte) 36;
-        bytes[34 + frontRightPosition] = (byte) 148;
-        bytes[35 + frontRightPosition] = (byte) 253;
+        bytes[33 + frontRightPosition] = (byte) 255;
+        bytes[34 + frontRightPosition] = (byte) 204;
+        bytes[35 + frontRightPosition] = (byte) 0;
 
         frontLeftDirection = frontLeftPosition == 30 || frontLeftPosition == 0 ? !frontLeftDirection : frontLeftDirection;
         frontLeftPosition += frontLeftDirection ? 3 : -3;
