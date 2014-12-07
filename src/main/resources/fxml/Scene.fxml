@@ -18,16 +18,18 @@
                     <items>
                         <Button fx:id="openSerialPortButton" mnemonicParsing="false" onAction="#handleOpenSerialPortButtonAction" text="Open Serial Port" />
                         <Button fx:id="closeSerialPortButton" disable="true" mnemonicParsing="false" onAction="#handleCloseSerialPortButtonAction" text="Close Serial Port" />
+                        <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+                        <ToggleButton fx:id="sendingStateMessagesToggleButton" mnemonicParsing="false" onAction="#handleSendingStateMessagesToggleButtonAction" text="Start Sending State Messages" />
                         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                         <Label text="Code:" />
-                        <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" promptText="to verify against" text="qwerty" />
+                        <TextField fx:id="codeTextField" onAction="#handleCodeTextFieldAction" prefHeight="26.0" prefWidth="130.0" promptText="to verify against" text="qwerty" />
                         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                         <Label text="Send interval:" />
-                        <ChoiceBox fx:id="sendIntervalChoiceBox" prefWidth="150.0" />
+                        <ChoiceBox fx:id="sendIntervalChoiceBox" prefHeight="26.0" prefWidth="70.0" />
                         <Label text="ms" />
                         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="8.0" />
                         <Label text="Vehicle state:" />
-                        <ChoiceBox fx:id="vehicleStateChoiceBox" prefWidth="150.0" />
+                        <ChoiceBox fx:id="vehicleStateChoiceBox" prefHeight="26.0" prefWidth="140.0" />
                     </items>
                 </ToolBar>
                 <ToolBar prefHeight="40.0">
@@ -48,7 +50,7 @@
                         </ToggleButton>
                         <ToggleButton mnemonicParsing="false" onAction="#handleHeadlightToggleButtonAction">
                             <graphic>
-                                <ImageView preserveRatio="true" >
+                                <ImageView preserveRatio="true">
                                     <image>
                                         <Image url="@headlight.png" />
                                     </image>

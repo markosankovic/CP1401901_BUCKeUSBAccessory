@@ -26,6 +26,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.effect.Bloom;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -287,9 +288,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
             serialPort.addEventListener(new SerialPortReader());
 
             // Start the state message thread
-            stateMessageThread = new Thread(new StateMessageRunnable());
-            stateMessageThread.start();
-
+            // startSendingStateMessages();
             openSerialPortButton.setDisable(true);
             closeSerialPortButton.setDisable(false);
         } catch (SerialPortException ex) {
@@ -302,13 +301,36 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         if (serialPort != null && serialPort.isOpened()) {
             try {
                 serialPort.closePort();
-                stateMessageThread.interrupt();
+                stopSendingStateMessages();
                 openSerialPortButton.setDisable(false);
                 closeSerialPortButton.setDisable(true);
             } catch (SerialPortException ex) {
                 logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
+    }
+
+    @FXML
+    ToggleButton sendingStateMessagesToggleButton;
+
+    @FXML
+    void handleSendingStateMessagesToggleButtonAction(ActionEvent event) {
+        if (sendingStateMessagesToggleButton.isSelected()) {
+            startSendingStateMessages();
+            sendingStateMessagesToggleButton.setText("Stop Sending State Messages");
+        } else {
+            stopSendingStateMessages();
+            sendingStateMessagesToggleButton.setText("Start Sending State Messages");
+        }
+    }
+
+    void startSendingStateMessages() {
+        stateMessageThread = new Thread(new StateMessageRunnable());
+        stateMessageThread.start();
+    }
+
+    void stopSendingStateMessages() {
+        stateMessageThread.interrupt();
     }
 
     public void onClose() {
@@ -554,6 +576,12 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
                     Thread.sleep(interval);
                 } catch (InterruptedException e) {
                     logger.log(Level.INFO, "State message thread is interrupted.");
+                    break;
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    if (serialPort == null) {
+                        logger.log(Level.SEVERE, "Serial port is not opened");
+                    }
                     break;
                 }
             }
