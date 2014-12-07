@@ -50,7 +50,8 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     int stopBits = 2;
     int parity = 0;
 
-    byte states = 0x21;
+    byte states1 = 0x21;
+    byte states2 = 0x01;
 
     @FXML
     AnchorPane anchorPane;
@@ -356,50 +357,56 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
 
     @FXML
     void handleSmartphoneConnectedToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x01);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x01);
+        logFlags(states1);
     }
 
     @FXML
     void handleHeadlightToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x02);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x02);
+        logFlags(states1);
     }
 
     @FXML
     void handleCameraToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x04);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x04);
+        logFlags(states1);
     }
 
     @FXML
     void handleLeftTurnSignalToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x08);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x08);
+        logFlags(states1);
     }
 
     @FXML
     void handleRightTurnSignalToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x10);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x10);
+        logFlags(states1);
     }
 
     @FXML
     void handleGasThrottleIdleStateToggleButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x20);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x20);
+        logFlags(states1);
     }
 
     @FXML
     void handleHornButtonButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x40);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x40);
+        logFlags(states1);
     }
 
     @FXML
     void handleBrakeButtonAction(ActionEvent event) {
-        states = (byte) (states ^ 0x80);
-        logFlags(states);
+        states1 = (byte) (states1 ^ 0x80);
+        logFlags(states1);
+    }
+
+    @FXML
+    void handleSoundButtonAction(ActionEvent event) {
+        states2 = (byte) (states2 ^ 0x01);
+        logFlags(states2);
     }
 
     void logFlags(byte flags) {
@@ -548,12 +555,13 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
             while (true) {
                 try {
                     // Prepare data for the smartphone
-                    ByteBuffer buffer = ByteBuffer.allocate(15);
+                    ByteBuffer buffer = ByteBuffer.allocate(16);
                     buffer.order(ByteOrder.LITTLE_ENDIAN);
                     buffer.put((byte) 0xAA);
                     buffer.put((byte) 0x55);
                     buffer.put(OnBoardControllerConstants.OBC_STATE_MESSAGE);
-                    buffer.put(states); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle
+                    buffer.put(states1); // smartphone connected, headlight on, camera on, left turn signal on, right turn signal on, gas throttle idle, horn button, brake on
+                    buffer.put(states2); // sound on
                     VehicleState vehicleState = (VehicleState) vehicleStateChoiceBox.getSelectionModel().getSelectedItem();
                     buffer.put(vehicleState.getValue()); // Standby, Standstill, Recuperation, Sailing, Drive, Boost
                     buffer.putShort(speed); // SPEED

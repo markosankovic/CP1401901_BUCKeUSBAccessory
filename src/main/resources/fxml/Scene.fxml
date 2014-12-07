@@ -71,6 +71,7 @@
                         <ToggleButton mnemonicParsing="false" onAction="#handleGasThrottleIdleStateToggleButtonAction" selected="true" text="GAS THROTTLE IDLE STATE" />
                         <ToggleButton mnemonicParsing="false" onAction="#handleHornButtonButtonAction" text="HORN BUTTON" />
                         <ToggleButton mnemonicParsing="false" onAction="#handleBrakeButtonAction" text="BRAKE" />
+                        <ToggleButton mnemonicParsing="false" onAction="#handleSoundButtonAction" selected="true" text="SOUND" />
                     </items>
                 </ToolBar>
                 <GridPane hgap="10.0" prefHeight="120.0">
