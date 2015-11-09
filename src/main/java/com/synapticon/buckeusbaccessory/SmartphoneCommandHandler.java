@@ -1,7 +1,6 @@
 package com.synapticon.buckeusbaccessory;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 
 public class SmartphoneCommandHandler {
 
@@ -43,8 +42,10 @@ public class SmartphoneCommandHandler {
                 payload = new ByteArrayOutputStream();
                 command = checksum = b; // start checksum with a command byte
                 switch (command) {
-                    case OnBoardControllerConstants.SOFT_CLOSE_COMMAND:
+                    case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
+                    case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
                         state = ReadState.CHECKSUM;
+                        break;
                     case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
                     case OnBoardControllerConstants.LED_UPDATE_COMMAND:
                         state = ReadState.PAYLOAD;
@@ -72,8 +73,12 @@ public class SmartphoneCommandHandler {
             case CHECKSUM:
                 if (b == checksum) {
                     switch (command) {
-                        case OnBoardControllerConstants.SOFT_CLOSE_COMMAND:
-                            handler.handleSoftCloseCommand();
+                        case OnBoardControllerConstants.RELEASE_DRIVETRAIN_COMMAND:
+                            handler.handleReleaseDrivetrainCommand();
+                            break;
+                        case OnBoardControllerConstants.DISABLE_DRIVETRAIN_COMMAND:
+                            handler.handleDisableDrivetrainCommand();
+                            break;
                         case OnBoardControllerConstants.VERIFY_CODE_COMMAND:
                             handler.handleVerifyCodeCommand(payload.toByteArray());
                             break;

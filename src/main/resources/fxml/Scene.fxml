@@ -72,6 +72,7 @@
                         <ToggleButton mnemonicParsing="false" onAction="#handleHornButtonButtonAction" text="HORN BUTTON" />
                         <ToggleButton mnemonicParsing="false" onAction="#handleBrakeButtonAction" text="BRAKE" />
                         <ToggleButton mnemonicParsing="false" onAction="#handleSoundButtonAction" selected="true" text="SOUND" />
+                  <ToggleButton fx:id="screenOnToggleButton" mnemonicParsing="false" onAction="#handleScreenOnButtonAction" selected="true" text="SCREEN ON" />
                     </items>
                 </ToolBar>
                 <GridPane hgap="10.0" prefHeight="120.0">
@@ -88,7 +89,7 @@
                         <RowConstraints maxHeight="45.0" minHeight="0.0" prefHeight="12.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
+                        <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="10.0" max="120.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
                         <Slider fx:id="batteryPowerSlider" blockIncrement="1.0" majorTickUnit="512.0" max="512.0" min="-512.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" />
                         <Slider fx:id="batteryStateOfChargeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="80.0" GridPane.columnIndex="2" />
                         <Slider fx:id="remainingDistanceSlider" blockIncrement="1.0" majorTickUnit="50.0" max="255.0" minorTickCount="1" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="150.0" GridPane.columnIndex="3" />

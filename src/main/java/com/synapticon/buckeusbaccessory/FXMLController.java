@@ -83,6 +83,9 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     ChoiceBox vehicleStateChoiceBox;
 
     @FXML
+    ToggleButton screenOnToggleButton;
+
+    @FXML
     Slider speedSlider;
     short speed = 0;
 
@@ -409,6 +412,20 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         logFlags(states2);
     }
 
+    @FXML
+    void handleScreenOnButtonAction(ActionEvent event) throws SerialPortException {
+        logger.log(Level.INFO, screenOnToggleButton.isSelected() ? "Turn screen ON" : "Turn screen OFF");
+        byte turnScreenOn = screenOnToggleButton.isSelected() ? (byte) 0x06 : (byte) 0x09;
+        ByteBuffer buffer = ByteBuffer.allocate(5);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put((byte) 0xAA);
+        buffer.put((byte) 0x55);
+        buffer.put((byte) OnBoardControllerConstants.OBC_TURN_SCREEN_MESSAGE);
+        buffer.put((byte) turnScreenOn);
+        buffer.put(Utils.checksum(Arrays.copyOfRange(buffer.array(), 2, buffer.capacity())));
+        serialPort.writeBytes(buffer.array());
+    }
+
     void logFlags(byte flags) {
         logger.log(Level.INFO, String.format("%8s", Integer.toBinaryString(flags & 0xFF)).replace(' ', '0'));
     }
@@ -488,8 +505,13 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
     }
 
     @Override
-    public void handleSoftCloseCommand() {
-        // TODO: Return OnBoardControllerConstants.SOFT_CLOSE_MESSAGE
+    public void handleReleaseDrivetrainCommand() {
+        logger.log(Level.INFO, "Release drivetrain");
+    }
+
+    @Override
+    public void handleDisableDrivetrainCommand() {
+        logger.log(Level.INFO, "Disable drivetrain");
     }
 
     /**
@@ -505,7 +527,7 @@ public class FXMLController implements Initializable, LEDUpdater, CommandHandler
         buffer.put((byte) 0xAA);
         buffer.put((byte) 0x55);
         buffer.put((byte) 0x02);
-        buffer.put(OnBoardControllerConstants.CODE_VERIFICATION_MESSAGE);
+        buffer.put(OnBoardControllerConstants.VERIFY_CODE_COMMAND);
 
         // Grab code from byte array, might be padded with ASCII NULL
         int i = bytes.length - 1;
